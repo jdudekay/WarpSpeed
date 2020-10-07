@@ -49,10 +49,13 @@ cls
 
 setlocal EnableExtensions DisableDelayedExpansion
 set /a count=1
+set /a totFile=0
+set /a dupFile=0
+set /a illChar=0
 
 rem Initialization of OutputFolder and main program prompts
 md "OutputFolder" 2>nul
-echo WarpSpeed: Night Audit Accelerator by John Dudek v 1.0.1
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.0.1
 echo. 
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 
@@ -60,6 +63,19 @@ rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 
 rem Pause before program exit
+pause
+cls
+set /a totFile=%totFile%-%illChar%
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.0.1
+echo. 
+echo File Renaming and Moving complete!
+echo.
+echo Report:
+echo ----------------------------------------
+echo Illegal Characters Corrected: %illChar%
+echo.
+echo Total Files Renamed and Moved: %totFile%
+echo.
 pause
 goto :EOF
 
@@ -90,8 +106,8 @@ rem Also checks to make sure no files are overwritten
 if not exist "OutputFolder\%fileName%.pdf" (
 move "%FilePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
+set /a totFile=%totFile%+1
 ) else (
-echo Duplicate file found, adding suffix.
 set "fileName=%report%_%dat% (%count%)"
 set /a count=%count%+1
 goto :while
@@ -102,13 +118,14 @@ rem Also checks to make sure no files are overwritten
 if errorlevel 1 set report=%report:A/R =%
 if errorlevel 1 set "fileName=AR %report%_%dat%"
 if errorlevel 1 echo Illegal Character detected and removed.
+if errorlevel 1 set /a illChar=%illChar%+1
 if errorlevel 1 (
 :whileAR
 if not exist "OutputFolder\%fileName%.pdf" (
 move "%FilePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
+set /a totFile=%totFile%+1
 ) else (
-echo Duplicate file found, adding suffix.
 set "fileName=AR %report%_%dat% (%count%)"
 set /a count=%count%+1
 goto :whileAR
