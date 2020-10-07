@@ -37,7 +37,7 @@ echo +-+-+-                                           888               888     
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                               N i g h t   A u d i t   A c c e l e r a t o r                                -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                   v 1.0.0                                                  -+-+-+
+echo +-+-+-                                                   v 1.0.1                                                  -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                                       Copyright (C) 2020 John Dudek                                        -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
@@ -52,7 +52,7 @@ set /a count=1
 
 rem Initialization of OutputFolder and main program prompts
 md "OutputFolder" 2>nul
-echo WarpSpeed: Night Audit Accelerator by John Dudek v 1.0.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v 1.0.1
 echo. 
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 
@@ -91,6 +91,7 @@ if not exist "OutputFolder\%fileName%.pdf" (
 move "%FilePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
 ) else (
+echo Duplicate file found, adding suffix.
 set "fileName=%report%_%dat% (%count%)"
 set /a count=%count%+1
 goto :while
@@ -100,12 +101,14 @@ rem AR reports have the illegal "/" character, this removes it
 rem Also checks to make sure no files are overwritten
 if errorlevel 1 set report=%report:A/R =%
 if errorlevel 1 set "fileName=AR %report%_%dat%"
+if errorlevel 1 echo Illegal Character detected and removed.
 if errorlevel 1 (
 :whileAR
 if not exist "OutputFolder\%fileName%.pdf" (
 move "%FilePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
 ) else (
+echo Duplicate file found, adding suffix.
 set "fileName=AR %report%_%dat% (%count%)"
 set /a count=%count%+1
 goto :whileAR
