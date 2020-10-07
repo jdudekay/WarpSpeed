@@ -6,6 +6,8 @@
 # Using WarpSpeed
 **WarpSpeed** will prompt the user to input the date for which the Night Audit is being ran, the format for which is suggested to be MM.DD.YY but the script will allow you to choose whichever date format works best for you
 
+During the running process, the console window will describe what is happening, with any Errors that are corrected indicated in the console output.
 
+At the end of the process, the console window will display a short summary report of the actions taken.
 
 Copyright (C) 2020 John Dudek
