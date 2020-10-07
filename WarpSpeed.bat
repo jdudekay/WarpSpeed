@@ -37,7 +37,7 @@ echo +-+-+-                                           888               888     
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                               N i g h t   A u d i t   A c c e l e r a t o r                                -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                   v 1.0.1                                                  -+-+-+
+echo +-+-+-                                                   v 1.1.0                                                  -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                                       Copyright (C) 2020 John Dudek                                        -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
@@ -55,7 +55,7 @@ set /a illChar=0
 
 rem Initialization of OutputFolder and main program prompts
 md "OutputFolder" 2>nul
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.0.1
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.1.0
 echo. 
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 
@@ -66,7 +66,7 @@ rem Pause before program exit
 pause
 cls
 set /a totFile=%totFile%-%illChar%
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.0.1
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.1.0
 echo. 
 echo File Renaming and Moving complete!
 echo.
