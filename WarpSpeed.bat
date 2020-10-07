@@ -106,7 +106,7 @@ if not exist "OutputFolder\%fileName%.pdf" (
 move "%FilePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
 ) else (
-set "fileName=%report%_%dat% (%count%)"
+set "fileName=AR %report%_%dat% (%count%)"
 set /a count=%count%+1
 goto :whileAR
 )
