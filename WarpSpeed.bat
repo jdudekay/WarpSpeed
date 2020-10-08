@@ -14,7 +14,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+set ver=1.3.1
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -38,7 +38,7 @@ echo +-+-+-                                           888               888     
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                               N i g h t   A u d i t   A c c e l e r a t o r                                -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                   v 1.3.0                                                  -+-+-+
+echo +-+-+-                                                   v %ver%                                                  -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                                       Copyright (C) 2020 John Dudek                                        -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
@@ -56,9 +56,23 @@ set /a illChar=0
 
 rem Initialization of OutputFolder and main program prompts
 md "OutputFolder" 2>nul
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.3.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo. 
+if not exist "pdftotext.exe" (
+echo FATAL ERROR: pdftotext.exe is missing. 
+echo WarpSpeed cannot run. 
+echo Download the latest version of WarpSpeed from https://github.com/jdudekay/WarpSpeed
+echo.
+pause
+goto :EOF
+)
+set /p usr="Did you delete the Output Folder? "
+if not "%usr%" == "Y" goto :EOF
+set %usr% = nul 
+set /p usr="Did you copy ALL of the .pdf files to the WarpSpeed Folder? "
+if not "%usr%" == "Y" goto :EOF
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
+set dat=%dat: =%
 echo.
 echo Initializing file processing . . . 
 
@@ -94,9 +108,9 @@ cd..
 del WS_Report.txt 2>nul
 
 (
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.3.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo. 
-echo Operation complete on %date% at %time%
+echo Operation completed on %date% at %time%
 echo.
 echo WarpSpeed Report:
 echo ----------------------------------------
@@ -110,9 +124,9 @@ echo This report has been saved at %cd%\WS_Report.txt
 echo.
 ) > WS_Report.txt
 
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.3.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo. 
-echo Operation complete on %date% at %time%
+echo Operation completed on %date% at %time%
 echo.
 echo WarpSpeed Report:
 echo ----------------------------------------
