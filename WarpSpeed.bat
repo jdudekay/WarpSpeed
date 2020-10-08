@@ -38,7 +38,7 @@ echo +-+-+-                                           888               888     
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                               N i g h t   A u d i t   A c c e l e r a t o r                                -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                   v 1.2.0                                                  -+-+-+
+echo +-+-+-                                                   v 1.3.0                                                  -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                                       Copyright (C) 2020 John Dudek                                        -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
@@ -56,51 +56,91 @@ set /a illChar=0
 
 rem Initialization of OutputFolder and main program prompts
 md "OutputFolder" 2>nul
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.2.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.3.0
 echo. 
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
+echo.
+echo Initializing file processing . . . 
 
 rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 echo Initial renaming and moving sequence complete.
+echo.
 pause
 
 rem Cleanup subroutine
+echo.
 echo Cleaning up file names . . .
 cd OutputFolder
 call :cleanUp
+echo File Name clean-up complete.
+echo.
 pause
 
-rem Pause before program exit
+rem Subroutine for the creation of Audit Pack
+echo.
+echo Creating Night Audit Pack . . .
+call :auditPack
+cd "AuditPack"
+echo Audit Pack Creation complete.
+echo.
+pause
+
+rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
 cls
 set /a totFile=%totFile%-%illChar%
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.2.0
+cd..
+cd..
+del WS_Report.txt 2>nul
+
+(
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.3.0
 echo. 
-echo Operation complete.
+echo Operation complete on %date% at %time%
 echo.
-echo Statistics Report:
+echo WarpSpeed Report:
 echo ----------------------------------------
 echo Illegal Characters Corrected: %illChar% 
 echo.
 echo Total Files Renamed and Moved: %totFile%
 echo.
+echo Audit Pack location: %auditPackLoc%
+echo.
+echo This report has been saved at %cd%\WS_Report.txt
+echo.
+) > WS_Report.txt
+
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.3.0
+echo. 
+echo Operation complete on %date% at %time%
+echo.
+echo WarpSpeed Report:
+echo ----------------------------------------
+echo Illegal Characters Corrected: %illChar% 
+echo.
+echo Total Files Renamed and Moved: %totFile%
+echo.
+echo Audit Pack location: %auditPackLoc%
+echo.
+echo This report has been saved at %cd%\WS_Report.txt
+echo.
 pause
 goto :EOF
 
-:RenamePDF
-set "FilePDF=%~1"
-set "FileTXT=%~dpn1.txt"
+:renamePDF
+set "filePDF=%~1"
+set "fileTXT=%~dpn1.txt"
 
 rem Create text version of .pdf to be read
 rem Parameters are set to print only the first page and in raw which condenses the data
-pdftotext.exe -l 1 -raw "%FilePDF%"
+pdftotext.exe -l 1 -raw "%filePDF%"
 
 rem For loop is used to call find which selects the line that contains the report name
 rem Names
-for /F "tokens=1 delims=:" %%A in ('%SystemRoot%\System32\find.exe "Westin Medical Ctr" "%FileTXT%"') do set "report=%%A"
+for /F "tokens=1 delims=:" %%A in ('%SystemRoot%\System32\find.exe "Westin Medical Ctr" "%fileTXT%"') do set "report=%%A"
 
 rem The text version of the PDF file is no longer needed.
-del "%FileTXT%"
+del "%fileTXT%"
 
 rem Trim unneccessary words from file name variable
 rem Creates actual fileName variable from user inputted and computer derived variables
@@ -112,7 +152,7 @@ rem Move the PDF file to OutputFolder and rename the file while moving it.
 rem Also checks to make sure no files are overwritten
 :while
 if not exist "OutputFolder\%fileName%.pdf" (
-move "%FilePDF%" "OutputFolder\%fileName%.pdf"
+move "%filePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
 set /a totFile=%totFile%+1
 ) else (
@@ -130,7 +170,7 @@ if errorlevel 1 set /a illChar=%illChar%+1
 if errorlevel 1 (
 :whileAR
 if not exist "OutputFolder\%fileName%.pdf" (
-move "%FilePDF%" "OutputFolder\%fileName%.pdf"
+move "%filePDF%" "OutputFolder\%fileName%.pdf"
 set /a count=1
 set /a totFile=%totFile%+1
 ) else (
@@ -193,11 +233,41 @@ ren "In House Guest Report_%dat%.pdf" "In House Guest Report_%dat% (All Inhouse)
 ren "In House Guest Report_%dat% (1).pdf" "In House Guest Report_%dat% (Reg Only).pdf"
 ren "Managers Statistics Report_%dat% (1).pdf" "Managers Statistics Report_%dat% (Summary).pdf"
 ren "Room Rate Change Report_%dat% (1).pdf" "Room Rate Change Report_%dat% (Inhouse Only).pdf" 
-ren "Special Services Report_%dat%.pdf" "T5 Special Services Report_%dat% (with Comments).pdf" 
-ren "Special Services Report_%dat% (1).pdf" "T5 Special Services Report_%dat%.pdf" 
-ren "Special Services Report_%dat% (2).pdf" "J8 Special Services Report_%dat%.pdf" 
-ren "Special Services Report_%dat% (3).pdf" "PARK Special Services Report_%dat%.pdf" 
-ren "Special Services Report_%dat% (4).pdf" "Ts Special Services Report_%dat%.pdf" 
-ren "Special Services Report_%dat% (5).pdf" "SCRE Special Services Report_%dat%.pdf" 
-ren "Special Services Report_%dat% (6).pdf" "EFE Special Services Report_%dat%.pdf" 
+ren "Special Services Report_%dat%.pdf" "Special Services Report (T5)_%dat% (with Comments).pdf" 
+ren "Special Services Report_%dat% (1).pdf" "Special Services Report (T5)_%dat%.pdf" 
+ren "Special Services Report_%dat% (2).pdf" "Special Services Report (J8)_%dat%.pdf" 
+ren "Special Services Report_%dat% (3).pdf" "Special Services Report (PARK)_%dat%.pdf" 
+ren "Special Services Report_%dat% (4).pdf" "Special Services Report (Ts)_%dat%.pdf" 
+ren "Special Services Report_%dat% (5).pdf" "Special Services Report (SCRE)_%dat%.pdf" 
+ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%.pdf" 
+goto :EOF
+
+:auditPack
+md "AuditPack" 2>nul
+
+copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
+copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf"
+copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf"
+copy "Covers Report_%dat% (Detail All Outlets).pdf" "AuditPack/Covers Report_%dat%.pdf"
+copy "Daily Cash Out Report_%dat% (3).pdf" "AuditPack/Daily Cash Out Report_%dat%.pdf"
+copy "Daily Revenue Report_%dat% (3).pdf" "AuditPack/Daily Revenue Report_%dat%.pdf"
+copy "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf" "AuditPack/Detail Ticket Report_%dat%.pdf"
+copy "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf" "AuditPack/Detail Adjustments Report_%dat%.pdf"
+copy "Expected Arrival Report_%dat% (1).pdf" "AuditPack/Expected Arrival Report_%dat%.pdf"
+copy "Guest Ledger Summary Report_%dat% (By Room)(1).pdf" "AuditPack/Guest Ledger Summary Report_%dat%.pdf"
+copy "High Balance Report_%dat% (Exceed Or Within 150).pdf" "AuditPack/High Balance Report_%dat%.pdf"
+copy "Managers Statistics Report_%dat%.pdf" "AuditPack/Managers Statistics Report_%dat%.pdf"
+copy "Market Segment Analysis_%dat% (1).pdf" "AuditPack/Market Segment Analysis_%dat%.pdf"
+copy "No Show Report_%dat%.pdf" "AuditPack/No Show Report_%dat%.pdf"
+copy "Open Folio System Balancing Report_%dat% (1).pdf" "AuditPack/Open Folio System Balancing Report_%dat%.pdf"
+copy "Out Of Order Report_%dat%.pdf" "AuditPack/Out Of Order Report_%dat%.pdf"
+copy "Reservation Activity Report_%dat%.pdf" "AuditPack/Reservation Activity Report_%dat%.pdf"
+copy "Room Rate Change Report_%dat%.pdf" "AuditPack/Room Rate Change Report_%dat%.pdf"
+copy "Special Services Report (EFE)_%dat%.pdf" "AuditPack/Special Services Report (EFE)_%dat%.pdf"
+copy "Special Services Report (SCRE)_%dat%.pdf" "AuditPack/Special Services Report (SCRE)_%dat%.pdf"
+copy "Special Services Report (T5)_%dat% (with Comments).pdf" "AuditPack/Special Services Report (T5)_%dat%.pdf"
+copy "Special Services Report (Ts)_%dat%.pdf" "AuditPack/Special Services Report (Ts)_%dat%.pdf"
+copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
+set "auditPackLoc=%cd%\AuditPack\"
+
 goto :EOF
