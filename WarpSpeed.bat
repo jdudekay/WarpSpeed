@@ -15,6 +15,7 @@ rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -37,7 +38,7 @@ echo +-+-+-                                           888               888     
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                               N i g h t   A u d i t   A c c e l e r a t o r                                -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                   v 1.1.0                                                  -+-+-+
+echo +-+-+-                                                   v 1.2.0                                                  -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                                       Copyright (C) 2020 John Dudek                                        -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
@@ -55,24 +56,31 @@ set /a illChar=0
 
 rem Initialization of OutputFolder and main program prompts
 md "OutputFolder" 2>nul
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.1.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.2.0
 echo. 
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 
 rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
+echo Initial renaming and moving sequence complete.
+pause
+
+rem Cleanup subroutine
+echo Cleaning up file names . . .
+cd OutputFolder
+call :cleanUp
+pause
 
 rem Pause before program exit
-pause
 cls
 set /a totFile=%totFile%-%illChar%
-echo WarpSpeed: Night Audit Accelerator by John Dudek v1.1.0
+echo WarpSpeed: Night Audit Accelerator by John Dudek v1.2.0
 echo. 
-echo File Renaming and Moving complete!
+echo Operation complete.
 echo.
-echo Report:
+echo Statistics Report:
 echo ----------------------------------------
-echo Illegal Characters Corrected: %illChar%
+echo Illegal Characters Corrected: %illChar% 
 echo.
 echo Total Files Renamed and Moved: %totFile%
 echo.
@@ -133,4 +141,63 @@ goto :whileAR
 )
 
 rem Exit the subroutine RenamePDF and continue with FOR loop in main code.
+goto :EOF
+
+rem Crudely renames duplicate files based on known contents
+:cleanUp
+ren "---------- C_%dat%.pdf" "Open Folio System Balancing Report_%dat%.pdf"
+ren "---------- C_%dat% (1).pdf" "Open Folio System Balancing Report_%dat% (1).pdf"
+ren "---------- C_%dat% (2).pdf" "Payment Register Detail Report_%dat%.pdf"
+ren "---------- C_%dat% (3).pdf" "Accounts Receivable Activity Report_%dat%.pdf"
+ren "Bank Transaction Report_%dat%.pdf" "Bank Transaction Report_%dat% (All).pdf"
+ren "Bank Transaction Report_%dat% (1).pdf" "Bank Transaction Report_%dat% (Dcln).pdf"
+ren "Bank Transaction Report_%dat% (2).pdf" "Bank Transaction Report_%dat% (Pend).pdf"
+ren "Bank Transaction Report_%dat% (3).pdf" "Bank Transaction Report_%dat% (All)(1).pdf"
+ren "Bank Transaction Report_%dat% (4).pdf" "Bank Transaction Report_%dat% (Blt).pdf"
+ren "Bank Transaction Report_%dat% (5).pdf" "Bank Transaction Report_%dat% (Blt)(1).pdf"
+ren "Complimentary Rooms Report_%dat%.pdf" "Complimentary Rooms Report_%dat% (Inhouse).pdf"
+ren "Complimentary Rooms Report_%dat% (1).pdf" "Complimentary Rooms Report_%dat% (All).pdf"
+ren "Covers Report_%dat%.pdf" "Covers Report_%dat% (Detail All Outlets).pdf"
+ren "Covers Report_%dat% (1).pdf" "Covers Report_%dat% (Detail T54).pdf"
+ren "Covers Report_%dat% (2).pdf" "Covers Report_%dat% (Summary).pdf"
+ren "Daily Revenue Report_%dat% (2).pdf" "Daily Revenue Report_%dat% (Inc YTD Budget).pdf"
+ren "Daily Revenue Report_%dat% (3).pdf" "Daily Revenue Report_%dat% (2).pdf"
+ren "Daily Revenue Report_%dat% (4).pdf" "Daily Revenue Report_%dat% (3).pdf"
+ren "Detail Ticket Report_%dat%.pdf" "Detail Ticket Report_%dat% (Dep_All Sub_All).pdf"
+ren "Detail Ticket Report_%dat% (1).pdf" "Detail Ticket Report_%dat% (Dep_98 Sub_1).pdf"
+ren "Detail Ticket Report_%dat% (2).pdf" "Detail Ticket Report_%dat% (Dep_98 Sub_1)(1).pdf"
+ren "Detail Ticket Report_%dat% (3).pdf" "Detail Ticket Report_%dat% (Dep_98 Sub_24).pdf"
+ren "Detail Ticket Report_%dat% (4).pdf" "Detail Ticket Report_%dat% (Dep_98 Sub_24)(1).pdf"
+ren "Detail Ticket Report_%dat% (5).pdf" "Detail Ticket Report_%dat% (Dep_All Sub_All)(1).pdf"
+ren "Detail Ticket Report_%dat% (6).pdf" "Detail Ticket Report_%dat% (Dep_All Sub_All)(2).pdf"
+ren "Detail Ticket Report_%dat% (7).pdf" "Detail Ticket Report_%dat% (Dep_5 Sub_All).pdf"
+ren "Detail Ticket Report_%dat% (8).pdf" "Detail Ticket Report_%dat% (Dep_6 Sub_All).pdf"
+ren "Detail Ticket Report_%dat% (9).pdf" "Detail Ticket Report_%dat% (Dep_7 Sub_All).pdf"
+ren "Detail Ticket Report_%dat% (10).pdf" "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf"
+ren "Detail Ticket Report_%dat% (11).pdf" "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to60).pdf"
+ren "Detail Ticket Report_%dat% (12).pdf" "Detail Ticket Report_%dat% (Dep_15 Sub_All).pdf"
+ren "Detail Ticket Report_%dat% (13).pdf" "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf"
+ren "Detail Ticket Report_%dat% (14).pdf" "Detail Ticket Report_%dat% (Dep_1 Sub_95).pdf"
+ren "Detail Ticket Report_%dat% (15).pdf" "Detail Ticket Report_%dat% (Dep_1to99 Sub_50to99).pdf"
+rem ren "Expected Arrival Report_%dat%.pdf" "Expected Arrival Report_%dat%.pdf"
+rem ren "Expected Arrival Report_%dat% (1).pdf" "Expected Arrival Report_%dat% (1).pdf"
+rem ren "Expected Arrival Report_%dat% (2).pdf" "Expected Arrival Report_%dat% (2).pdf"
+rem ren "Expected Arrival Report_%dat% (3).pdf" "Expected Arrival Report_%dat% (3).pdf"
+rem ren "Expected Arrival Report_%dat% (4).pdf" "Expected Arrival Report_%dat% (4).pdf"
+ren "Guest Ledger Summary Report_%dat%.pdf" "Guest Ledger Summary Report_%dat% (By Name).pdf"
+ren "Guest Ledger Summary Report_%dat% (1).pdf" "Guest Ledger Summary Report_%dat% (By Room).pdf"
+ren "Guest Ledger Summary Report_%dat% (2).pdf" "Guest Ledger Summary Report_%dat% (By Room)(1).pdf"
+ren "High Balance Report_%dat%.pdf" "High Balance Report_%dat% (Exceed Or Within 150).pdf"
+ren "High Balance Report_%dat% (1).pdf" "High Balance Report_%dat% (All).pdf"
+ren "In House Guest Report_%dat%.pdf" "In House Guest Report_%dat% (All Inhouse).pdf"
+ren "In House Guest Report_%dat% (1).pdf" "In House Guest Report_%dat% (Reg Only).pdf"
+ren "Managers Statistics Report_%dat% (1).pdf" "Managers Statistics Report_%dat% (Summary).pdf"
+ren "Room Rate Change Report_%dat% (1).pdf" "Room Rate Change Report_%dat% (Inhouse Only).pdf" 
+ren "Special Services Report_%dat%.pdf" "T5 Special Services Report_%dat% (with Comments).pdf" 
+ren "Special Services Report_%dat% (1).pdf" "T5 Special Services Report_%dat%.pdf" 
+ren "Special Services Report_%dat% (2).pdf" "J8 Special Services Report_%dat%.pdf" 
+ren "Special Services Report_%dat% (3).pdf" "PARK Special Services Report_%dat%.pdf" 
+ren "Special Services Report_%dat% (4).pdf" "Ts Special Services Report_%dat%.pdf" 
+ren "Special Services Report_%dat% (5).pdf" "SCRE Special Services Report_%dat%.pdf" 
+ren "Special Services Report_%dat% (6).pdf" "EFE Special Services Report_%dat%.pdf" 
 goto :EOF
