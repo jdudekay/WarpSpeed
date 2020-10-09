@@ -14,7 +14,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.3.1
+set ver=1.3.2
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -93,17 +93,12 @@ pause
 
 rem Subroutine for the creation of Audit Pack
 echo.
-echo Creating Night Audit Pack . . .
+set /p usr="Did you want to make the Audit Pack? "
 call :auditPack
-cd "AuditPack"
-echo Audit Pack Creation complete.
-echo.
-pause
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
 cls
 set /a totFile=%totFile%-%illChar%
-cd..
 cd..
 del WS_Report.txt 2>nul
 
@@ -257,6 +252,9 @@ ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%
 goto :EOF
 
 :auditPack
+if "%usr%" == "Y" (
+echo Creating Night Audit Pack . . .
+
 md "AuditPack" 2>nul
 
 copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
@@ -283,5 +281,11 @@ copy "Special Services Report (T5)_%dat% (with Comments).pdf" "AuditPack/Special
 copy "Special Services Report (Ts)_%dat%.pdf" "AuditPack/Special Services Report (Ts)_%dat%.pdf"
 copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
 set "auditPackLoc=%cd%\AuditPack\"
+echo Audit Pack Creation complete.
+echo.
+pause
+) else (
+set "auditPackLoc=Not Created"
+)
 
 goto :EOF
