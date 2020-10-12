@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.4.0
+set ver=1.4.1
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -279,12 +279,16 @@ set /a "pageNum=%pageNum%-1"
 xpdfTools\pdftotext.exe -raw -f %pageNum% -l %pageNum% "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
 for /F "tokens=1-5 delims= " %%A in ('find "704924 AX American Express" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoAxSetl=%%E"
 set dcoAxSetl=%dcoAxSetl:,=%
+if "%dcoAxSetl%" == "Report%dat%" ( set "dcoAxSetl=0.00" )
 for /F "tokens=1-4 delims= " %%A in ('find "704924 VI Visa" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoViSetl=%%D"
 set dcoViSetl=%dcoViSetl:,=%
+if "%dcoViSetl%" == "OUT" ( set "dcoViSetl=0.00" )
 for /F "tokens=1-4 delims= " %%A in ('find "704924 MC MasterCard" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoMcSetl=%%D"
 set dcoMcSetl=%dcoMcSetl:,=%
+if "%dcoMcSetl%" == "OUT" ( set "dcoMcSetl=0.00" )
 for /F "tokens=1-4 delims= " %%A in ('find "704924 DI Discover" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoDiSetl=%%D"
 set dcoDiSetl=%dcoDiSetl:,=%
+if "%dcoDiSetl%" == "OUT" ( set "dcoDiSetl=0.00" )
 del "OutputFolder\Daily Cash Out Report_%dat% (3).txt"
 
 xpdfTools\pdftotext.exe -raw "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
@@ -303,9 +307,13 @@ find "*" "OutputFolder\Bank Transaction Report_%dat% (Blt)(1).txt"
 ) > temp.txt
 del "OutputFolder\Bank Transaction Report_%dat% (Blt)(1).txt"
 for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for AX on " "temp.txt"') do set "btrAxSetl=%%J"
+if "%btrAxSetl%" == "" ( set "btrAxSetl=0.00" )
 for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for VI on " "temp.txt"') do set "btrViSetl=%%J"
+if "%btrViSetl%" == "" ( set "btrViSetl=0.00" )
 for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for MC on " "temp.txt"') do set "btrMcSetl=%%J"
+if "%btrMcSetl" == "" ( set "btrMcSetl=0.00" )
 for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for DI on " "temp.txt"') do set "btrDiSetl=%%J"
+if "%btrDiSetl%" == "" ( set "btrDiSetl=0.00" )
 
 del temp.txt
 
