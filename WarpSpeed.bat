@@ -1,5 +1,8 @@
 @echo off
-rem    WarpSpeed: Night Audit Accelerator - A tool made with the intention of streamlining the renmaming a large amount of randomly-named .pdf files based on their contents
+rem    WarpSpeed: Night Audit Accelerator - A tool made with the intention 
+rem    of streamlining the Night Audit Process by renaming and sorting a large 
+rem    number of .pdf files and generating reports based off of their contents.
+rem
 rem    Copyright (C) 2020 John Dudek
 rem
 rem    This program is free software: you can redistribute it and/or modify
@@ -14,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.3.2
+set ver=1.4.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -54,12 +57,19 @@ set /a totFile=0
 set /a dupFile=0
 set /a illChar=0
 
-rem Initialization of OutputFolder and main program prompts
-md "OutputFolder" 2>nul
+rem Main program prompts
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo. 
-if not exist "pdftotext.exe" (
+if not exist "xpdfTools\pdftotext.exe" (
 echo FATAL ERROR: pdftotext.exe is missing. 
+echo WarpSpeed cannot run. 
+echo Download the latest version of WarpSpeed from https://github.com/jdudekay/WarpSpeed
+echo.
+pause
+goto :EOF
+)
+if not exist "xpdfTools\pdfinfo.exe" (
+echo FATAL ERROR: pdfinfo.exe is missing. 
 echo WarpSpeed cannot run. 
 echo Download the latest version of WarpSpeed from https://github.com/jdudekay/WarpSpeed
 echo.
@@ -73,19 +83,19 @@ set /p usr="Did you copy ALL of the .pdf files to the WarpSpeed Folder? "
 if not "%usr%" == "Y" goto :EOF
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 set dat=%dat: =%
+md "OutputFolder" 2>nul
 echo.
 echo Initializing file processing . . . 
 
 rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
+set /a totFile=%totFile%-%illChar%
 echo Initial renaming and moving sequence complete.
 echo.
 pause
 
 rem Cleanup subroutine
 echo.
-echo Cleaning up file names . . .
-cd OutputFolder
 call :cleanUp
 echo File Name clean-up complete.
 echo.
@@ -98,41 +108,7 @@ call :auditPack
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
 cls
-set /a totFile=%totFile%-%illChar%
-cd..
-del WS_Report.txt 2>nul
-
-(
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo. 
-echo Operation completed on %date% at %time%
-echo.
-echo WarpSpeed Report:
-echo ----------------------------------------
-echo Illegal Characters Corrected: %illChar% 
-echo.
-echo Total Files Renamed and Moved: %totFile%
-echo.
-echo Audit Pack location: %auditPackLoc%
-echo.
-echo This report has been saved at %cd%\WS_Report.txt
-echo.
-) > WS_Report.txt
-
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo. 
-echo Operation completed on %date% at %time%
-echo.
-echo WarpSpeed Report:
-echo ----------------------------------------
-echo Illegal Characters Corrected: %illChar% 
-echo.
-echo Total Files Renamed and Moved: %totFile%
-echo.
-echo Audit Pack location: %auditPackLoc%
-echo.
-echo This report has been saved at %cd%\WS_Report.txt
-echo.
+call :makeReport
 pause
 goto :EOF
 
@@ -142,7 +118,7 @@ set "fileTXT=%~dpn1.txt"
 
 rem Create text version of .pdf to be read
 rem Parameters are set to print only the first page and in raw which condenses the data
-pdftotext.exe -l 1 -raw "%filePDF%"
+xpdfTools\pdftotext.exe -l 1 -raw "%filePDF%"
 
 rem For loop is used to call find which selects the line that contains the report name
 rem Names
@@ -194,6 +170,8 @@ goto :EOF
 
 rem Crudely renames duplicate files based on known contents
 :cleanUp
+echo Cleaning up file names . . .
+cd OutputFolder
 ren "---------- C_%dat%.pdf" "Open Folio System Balancing Report_%dat%.pdf"
 ren "---------- C_%dat% (1).pdf" "Open Folio System Balancing Report_%dat% (1).pdf"
 ren "---------- C_%dat% (2).pdf" "Payment Register Detail Report_%dat%.pdf"
@@ -254,9 +232,7 @@ goto :EOF
 :auditPack
 if "%usr%" == "Y" (
 echo Creating Night Audit Pack . . .
-
 md "AuditPack" 2>nul
-
 copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
 copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf"
 copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf"
@@ -287,5 +263,115 @@ pause
 ) else (
 set "auditPackLoc=Not Created"
 )
+goto :EOF
+
+:makeReport
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo.
+echo Generating WarpSpeed Report . . .
+cd..
+
+(
+xpdfTools\pdfinfo.exe "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
+) > temp.txt
+for /F "tokens=1-2 delims= " %%A in ('find "Pages" "temp.txt"') do set /a "pageNum=%%B"
+set /a "pageNum=%pageNum%-1"
+xpdfTools\pdftotext.exe -raw -f %pageNum% -l %pageNum% "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
+for /F "tokens=1-5 delims= " %%A in ('find "704924 AX American Express" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoAxSetl=%%E"
+set dcoAxSetl=%dcoAxSetl:,=%
+for /F "tokens=1-4 delims= " %%A in ('find "704924 VI Visa" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoViSetl=%%D"
+set dcoViSetl=%dcoViSetl:,=%
+for /F "tokens=1-4 delims= " %%A in ('find "704924 MC MasterCard" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoMcSetl=%%D"
+set dcoMcSetl=%dcoMcSetl:,=%
+for /F "tokens=1-4 delims= " %%A in ('find "704924 DI Discover" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoDiSetl=%%D"
+set dcoDiSetl=%dcoDiSetl:,=%
+del "OutputFolder\Daily Cash Out Report_%dat% (3).txt"
+
+xpdfTools\pdftotext.exe -raw "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
+(
+find "Deposit Rcvd" "OutputFolder\Daily Revenue Report_%dat% (3).txt"
+) > temp.txt
+del "OutputFolder\Daily Revenue Report_%dat% (3).txt"
+for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - AX" "temp.txt"') do set "drrAxDep=%%E"
+for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - VI" "temp.txt"') do set "drrViDep=%%E"
+for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - MC" "temp.txt"') do set "drrMcDep=%%E"
+for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - DI" "temp.txt"') do set "drrDiDep=%%E"
+
+xpdfTools\pdftotext.exe -raw "OutputFolder/Bank Transaction Report_%dat% (Blt)(1).pdf"
+(
+find "*" "OutputFolder\Bank Transaction Report_%dat% (Blt)(1).txt"
+) > temp.txt
+del "OutputFolder\Bank Transaction Report_%dat% (Blt)(1).txt"
+for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for AX on " "temp.txt"') do set "btrAxSetl=%%J"
+for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for VI on " "temp.txt"') do set "btrViSetl=%%J"
+for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for MC on " "temp.txt"') do set "btrMcSetl=%%J"
+for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for DI on " "temp.txt"') do set "btrDiSetl=%%J"
+
+del temp.txt
+
+(
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo.
+echo WarpSpeed Report:
+echo ------------------------------------------- 
+echo Operation Completed on %date% at %time%
+echo.
+echo Audit Pack Location: %auditPackLoc%
+echo.
+echo WarpSpeed Report Location: %cd%\WS_Report.txt
+echo.
+echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo.
+echo Bank Balance Sheet Information:
+echo ------------------------------- 
+echo Daily Cash Out Settlement Totals -
+echo -------------------------------------------
+echo American Express: %dcoAxSetl%
+echo.
+echo Visa: %dcoViSetl%
+echo.
+echo MasterCard: %dcoMcSetl%
+echo.
+echo Discover: %dcoDiSetl%
+echo.
+echo.
+echo Daily Revenue Report Deposit Totals -
+echo -------------------------------------------
+echo American Express: %drrAxDep%
+echo.
+echo Visa: %drrViDep%
+echo.
+echo MasterCard: %drrMcDep%
+echo.
+echo Discover: %drrDiDep%
+echo.
+echo.
+echo Bank Transaction Report Settlement Totals -
+echo -------------------------------------------
+echo American Express: %btrAxSetl%
+echo.
+echo Visa: %btrViSetl%
+echo.
+echo MasterCard: %btrMcSetl%
+echo.
+echo Discover: %btrDiSetl%
+echo.
+) > WS_Report.txt
+
+cls
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo.
+echo WarpSpeed Report:
+echo ------------------------------------------- 
+echo Operation Completed on %date% at %time%
+echo.
+echo Audit Pack Location: %auditPackLoc%
+echo.
+echo WarpSpeed Report Location: %cd%\WS_Report.txt
+echo.
+echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo.
+echo Have a great rest of your shift!
+echo.
 
 goto :EOF
