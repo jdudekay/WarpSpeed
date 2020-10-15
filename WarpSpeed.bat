@@ -279,16 +279,16 @@ set /a "pageNum=%pageNum%-1"
 xpdfTools\pdftotext.exe -raw -f %pageNum% -l %pageNum% "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
 for /F "tokens=1-5 delims= " %%A in ('find "704924 AX American Express" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoAxSetl=%%E"
 set dcoAxSetl=%dcoAxSetl:,=%
-if "%dcoAxSetl%" == "Report%dat%" ( set "dcoAxSetl=0.00" )
+if "%dcoAxSetl%" == "REPORT_%dat%" ( set "dcoAxSetl=0.00" )
 for /F "tokens=1-4 delims= " %%A in ('find "704924 VI Visa" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoViSetl=%%D"
 set dcoViSetl=%dcoViSetl:,=%
 if "%dcoViSetl%" == "OUT" ( set "dcoViSetl=0.00" )
 for /F "tokens=1-4 delims= " %%A in ('find "704924 MC MasterCard" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoMcSetl=%%D"
 set dcoMcSetl=%dcoMcSetl:,=%
 if "%dcoMcSetl%" == "OUT" ( set "dcoMcSetl=0.00" )
-for /F "tokens=1-4 delims= " %%A in ('find "704924 DI Discover" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoDiSetl=%%D"
+for /F "tokens=1-5 delims= " %%A in ('find "704924 DI Discover" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoDiSetl=%%E"
 set dcoDiSetl=%dcoDiSetl:,=%
-if "%dcoDiSetl%" == "OUT" ( set "dcoDiSetl=0.00" )
+if "%dcoDiSetl%" == "REPORT_%dat%" ( set "dcoDiSetl=0.00" )
 del "OutputFolder\Daily Cash Out Report_%dat% (3).txt"
 
 xpdfTools\pdftotext.exe -raw "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
