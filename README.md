@@ -2,7 +2,15 @@
 # Welcome to WarpSpeed!
 **WarpSpeed** was created with the intention of streamlining the Night Audit process to help make smooth nights even smoother. Using it is designed to be as simple as possible, and really only requires a few easy steps:
 ## Step One
-Make sure the **WarpSpeed** folder is empty and ready for processing
+Make sure the **WarpSpeed** folder is empty and ready for processing except for:
+
+WarpSpeed.bat
+
+README.md
+
+LICENSE
+
+/xpdfTools/
  
 If there is ANYTHING other than the above listed files/folders in the **WarpSpeed** folder on the Desktop, delete them so that the folder matches as it is shown above
 
