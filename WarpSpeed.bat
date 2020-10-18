@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.4.1
+set ver=1.5.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -49,6 +49,7 @@ echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 pause
+:restart
 cls
 
 setlocal EnableExtensions DisableDelayedExpansion
@@ -59,7 +60,9 @@ set /a illChar=0
 
 rem Main program prompts
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo. 
+rem echo. 
+echo Type "help" for instructions
+echo.
 if not exist "xpdfTools\pdftotext.exe" (
 echo FATAL ERROR: pdftotext.exe is missing. 
 echo WarpSpeed cannot run. 
@@ -76,13 +79,17 @@ echo.
 pause
 goto :EOF
 )
-set /p usr="Did you delete the Output Folder? "
-if not "%usr%" == "Y" goto :EOF
-set %usr% = nul 
-set /p usr="Did you copy ALL of the .pdf files to the WarpSpeed Folder? "
-if not "%usr%" == "Y" goto :EOF
+rem set /p usr="Did you delete the Output Folder? "
+rem if "%usr%" == "help" goto :EOF
+rem set %usr% = nul 
+rem set /p usr="Did you copy ALL of the .pdf files to the WarpSpeed Folder? "
+rem if not "%usr%" == "Y" goto :EOF
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 set dat=%dat: =%
+if "%dat%" == "help" (
+start notepad "README.md" 
+goto :restart
+)
 md "OutputFolder" 2>nul
 echo.
 echo Initializing file processing . . . 
@@ -92,23 +99,23 @@ for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 set /a totFile=%totFile%-%illChar%
 echo Initial renaming and moving sequence complete.
 echo.
-pause
+rem pause
 
 rem Cleanup subroutine
 echo.
 call :cleanUp
 echo File Name clean-up complete.
 echo.
-pause
+rem pause
 
 rem Subroutine for the creation of Audit Pack
 echo.
-set /p usr="Did you want to make the Audit Pack? "
 call :auditPack
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
 cls
 call :makeReport
+start notepad "WS_Report.txt"
 pause
 goto :EOF
 
@@ -164,7 +171,6 @@ set /a count=%count%+1
 goto :whileAR
 )
 )
-
 rem Exit the subroutine RenamePDF and continue with FOR loop in main code.
 goto :EOF
 
@@ -230,7 +236,8 @@ ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%
 goto :EOF
 
 :auditPack
-if "%usr%" == "Y" (
+rem set /p usr="Did you want to make the Audit Pack? "
+rem if "%usr%" == "Y" (
 echo Creating Night Audit Pack . . .
 md "AuditPack" 2>nul
 copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
@@ -259,10 +266,10 @@ copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
 set "auditPackLoc=%cd%\AuditPack\"
 echo Audit Pack Creation complete.
 echo.
-pause
-) else (
-set "auditPackLoc=Not Created"
-)
+rem pause
+rem ) else (
+rem set "auditPackLoc=Not Created"
+rem )
 goto :EOF
 
 :makeReport
@@ -271,6 +278,7 @@ echo.
 echo Generating WarpSpeed Report . . .
 cd..
 
+rem Pulls Bank Balance Sheet Numbers from Daily Cash Out Report
 (
 xpdfTools\pdfinfo.exe "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
 ) > temp.txt
@@ -291,6 +299,7 @@ set dcoDiSetl=%dcoDiSetl:,=%
 if "%dcoDiSetl%" == "REPORT_%dat%" ( set "dcoDiSetl=0.00" )
 del "OutputFolder\Daily Cash Out Report_%dat% (3).txt"
 
+rem Pulls Bank Balance Sheet Numbers from Daily Revenue Report
 xpdfTools\pdftotext.exe -raw "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
 (
 find "Deposit Rcvd" "OutputFolder\Daily Revenue Report_%dat% (3).txt"
@@ -301,6 +310,7 @@ for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - VI" "temp.txt"') do s
 for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - MC" "temp.txt"') do set "drrMcDep=%%E"
 for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - DI" "temp.txt"') do set "drrDiDep=%%E"
 
+rem Pulls Bank Balance Sheet Numbers from Bank Transaction Report
 xpdfTools\pdftotext.exe -raw "OutputFolder/Bank Transaction Report_%dat% (Blt)(1).pdf"
 (
 find "*" "OutputFolder\Bank Transaction Report_%dat% (Blt)(1).txt"
@@ -315,8 +325,102 @@ if "%btrMcSetl" == "" ( set "btrMcSetl=0.00" )
 for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for DI on " "temp.txt"') do set "btrDiSetl=%%J"
 if "%btrDiSetl%" == "" ( set "btrDiSetl=0.00" )
 
-del temp.txt
+rem Pulls Statistics from Managers Statistics Report
+xpdfTools\pdftotext.exe -raw -l 1 "OutputFolder\Managers Statistics Report_%dat% (Summary).pdf" "temp.txt"
+setlocal enableextensions enabledelayedexpansion
+copy NUL temp2.txt > NUL
+set /A maxlines=26
+set /A linecount=0
+for /F "delims=" %%A in (temp.txt) do ( 
+  if !linecount! GEQ %maxlines% goto ExitLoop
+  echo %%A >> temp2.txt
+  set /A linecount+=1
+)
+:ExitLoop
+sort /R "temp2.txt" /O "temp.txt"
+del temp2.txt
+for /F "tokens=1-3 delims= " %%A in ('find "Available Rooms " "temp.txt"') do set "avlRooms=%%C"
+for /F "tokens=1-4 delims= " %%A in ('find "Rooms Occupied (Paid) " "temp.txt"') do set "occRooms=%%D"
+rem set /a occPer=100*(!occRooms! / !avlRooms!)
+for /F "tokens=1-3 delims= " %%A in ('find "Rev Par " "temp.txt"') do set "revPar=%%C"
+for /F "tokens=1-3 delims= " %%A in ('find "Room Revenue " "temp.txt"') do set "roomRev=%%C"
+for /F "tokens=1-3 delims= " %%A in ('find "All Revenue " "temp.txt"') do set "totRev=%%C"
+for /F "tokens=1-2 delims= " %%A in ('find "Arrivals " "temp.txt"') do set "arrivals=%%B"
+for /F "tokens=1-2 delims= " %%A in ('find "Departures " "temp.txt"') do set "departures=%%B
 
+rem Retrieve IRD Food Total
+xpdfTools\pdftotext.exe -raw -l 1 "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
+for /F "tokens=1-4 delims= " %%A in ('find "Food - Breakfast" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdBrfkst=%%D"
+set irdBrfkst=%irdBrfkst:.=%
+for /F "tokens=1-4 delims= " %%A in ('find "Food - Lunch" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdLunch=%%D"
+set irdLunch=%irdLunch:.=%
+for /F "tokens=1-4 delims= " %%A in ('find "Food - Dinner" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdDinn=%%D"
+set irdDinn=%irdDinn:.=%
+for /F "tokens=1-5 delims= " %%A in ('find "Food - Late Night" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdLate=%%E"
+set irdLate=%irdLate:.=%
+set /A irdTot=!irdBrfkst!+!irdLunch!+!irdDinn!+!irdLate!
+set irdTot=%irdTot:~0,-2%.%irdTot:~-2%
+del "OutputFolder\Daily Revenue Report_%dat% (3).txt"
+
+rem Retrieve T54 Food Total
+xpdfTools\pdftotext.exe -raw -f 2 -l 2 "OutputFolder/Daily Revenue Report_%dat% (3).pdf" "temp.txt"
+setlocal enableextensions enabledelayedexpansion
+copy NUL temp2.txt > NUL
+copy NUL temp3.txt > NUL
+set /A maxlines=36
+set /A linecount=0
+set /A line19=19
+set /A line20=20
+set /A line21=21
+set /A line22=22
+set /A line23=23
+set /A line24=24
+set /A line31=31
+set /A line32=32
+set /A line33=33
+set /A line34=34
+for /F "delims=" %%A in (temp.txt) do ( 
+  if !linecount! GEQ %maxlines% goto ExitLoop
+  if !linecount! EQU %line19% echo %%A >> temp2.txt 
+  if !linecount! EQU %line20% echo %%A >> temp2.txt 
+  if !linecount! EQU %line21% echo %%A >> temp2.txt 
+  if !linecount! EQU %line22% echo %%A >> temp2.txt 
+  if !linecount! EQU %line23% echo %%A >> temp2.txt 
+  if !linecount! EQU %line24% echo %%A >> temp2.txt 
+  if !linecount! EQU %line31% echo %%A >> temp3.txt 
+  if !linecount! EQU %line32% echo %%A >> temp3.txt 
+  if !linecount! EQU %line33% echo %%A >> temp3.txt 
+  if !linecount! EQU %line34% echo %%A >> temp3.txt 
+  set /A linecount+=1
+)
+:ExitLoop
+for /F "tokens=1-4 delims= " %%A in ('find "Food - Breakfast" "temp2.txt"') do set "t54Brfkst=%%D"
+set t54Brfkst=%t54Brfkst:.=%
+for /F "tokens=1-4 delims= " %%A in ('find "Food - Lunch" "temp2.txt"') do set "t54Lunch=%%D"
+set t54Lunch=%t54Lunch:.=%
+for /F "tokens=1-4 delims= " %%A in ('find "Food - Dinner" "temp2.txt"') do set "t54Dinner=%%D"
+set t54Dinner=%t54Dinner:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Beer" "temp2.txt"') do set "t54Beer=%%B"
+set t54Beer=%t54Beer:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Wine" "temp2.txt"') do set "t54Wine=%%B"
+set t54Wine=%t54Wine:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Liquor" "temp2.txt"') do set "t54Liquor=%%B"
+set t54Liquor=%t54Liquor:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Food" "temp3.txt"') do set "patFood=%%B"
+set patFood=%patFood:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Beer" "temp3.txt"') do set "patBeer=%%B"
+set patBeer=%patBeer:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Wine" "temp3.txt"') do set "patWine=%%B"
+set patWine=%patWine:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Liquor" "temp3.txt"') do set "patLiquor=%%B"
+set patLiquor=%patLiquor:.=%
+set /A t54Tot=!t54Brfkst!+!t54Lunch!+!t54Dinner!+!t54Beer!+!t54Wine!+!t54Liquor!+!patFood!+!patBeer!+!patWine!+!patLiquor!
+set t54Tot=%t54Tot:~0,-2%.%t54Tot:~-2%
+
+
+del temp.txt
+del temp2.txt
+del temp3.txt
 (
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
@@ -331,7 +435,7 @@ echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo.
 echo Bank Balance Sheet Information:
-echo ------------------------------- 
+echo =============================== 
 echo Daily Cash Out Settlement Totals -
 echo -------------------------------------------
 echo American Express: %dcoAxSetl%
@@ -364,14 +468,41 @@ echo MasterCard: %btrMcSetl%
 echo.
 echo Discover: %btrDiSetl%
 echo.
+echo.
+echo.
+echo Ops Report Statistics:
+echo ===============================
+echo Occupied Rooms: !occRooms!
+echo Occupancy: !occRooms! / !avlRooms!    //Not Retrievable by WarpSpeed
+echo RevPAR: !revPar!
+echo Room Rev: !roomRev!
+echo Total Rev: !totRev!
+echo Arrivals: !arrivals!
+echo Departures: !departures!
+echo.
+echo. 
+echo.
+echo Hotel Effectiveness Night Audit Entry:
+echo ===============================
+echo Occupied Rooms: !occRooms!
+echo Room Revenue: !roomRev!
+echo Departures: !departures!
+echo In Room Dining: !irdTot! 
+echo Restaurant Revenue: !t54Tot!
+echo.
+echo.  
 ) > WS_Report.txt
 
-cls
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+rem cls
+
+rem echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+rem echo.
+rem echo WarpSpeed Report:
+rem echo ------------------------------------------- 
+rem echo Operation Completed on %date% at %time%
+echo Complete.
 echo.
-echo WarpSpeed Report:
-echo ------------------------------------------- 
-echo Operation Completed on %date% at %time%
+echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo.
 echo Audit Pack Location: %auditPackLoc%
 echo.
@@ -379,7 +510,8 @@ echo WarpSpeed Report Location: %cd%\WS_Report.txt
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo.
-echo Have a great rest of your shift!
+echo Have a great rest of your shift^^!
 echo.
+
 
 goto :EOF
