@@ -31,8 +31,9 @@ As shown in the **WarpSpeed** report screen, the processed files will be placed 
 Retrieve Information from the **WarpSpeed** Report
  
 The generated report within the **WarpSpeed** folder, WS_Report.txt will currently contain the following data:
-Bank Balance Sheet Totals
-Ops Report Statistics
+- Bank Balance Sheet Totals
+- Ops Report Statistics
+- Hotel Effectiveness Night Audit Entry Statistics
 There are currently plans to expand this to include information for the M3 report as well, this guide will be updated to reflect that when it does.
 
 
