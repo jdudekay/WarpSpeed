@@ -37,7 +37,7 @@ The generated report within the **WarpSpeed** folder, WS_Report.txt will current
 - Ops Report Statistics
 - Hotel Effectiveness Night Audit Entry Statistics
 
-As it currently stands there are no further statistics which WarpSpeed can reliably extract.
+As it currently stands there are no further statistics which **WarpSpeed** can reliably extract.
 
 
 If you have ANY questions, feel free to contact John Dudek at ANY time, 24/7 @ (631)745-0820 or jdudek@thewestinhouston.com
