@@ -1,6 +1,7 @@
+ # Welcome to WarpSpeed!
  
-# Welcome to WarpSpeed!
 **WarpSpeed** was created with the intention of streamlining the Night Audit process to help make smooth nights even smoother. Using it is designed to be as simple as possible, and really only requires a few easy steps:
+
 ## Step One
 Make sure the **WarpSpeed** folder is empty and ready for processing except for:
 * WarpSpeed.bat
@@ -31,10 +32,12 @@ As shown in the **WarpSpeed** report screen, the processed files will be placed 
 Retrieve Information from the **WarpSpeed** Report
  
 The generated report within the **WarpSpeed** folder, WS_Report.txt will currently contain the following data:
+
 - Bank Balance Sheet Totals
 - Ops Report Statistics
 - Hotel Effectiveness Night Audit Entry Statistics
-There are currently plans to expand this to include information for the M3 report as well, this guide will be updated to reflect that when it does.
+
+As it currently stands there are no further statistics which WarpSpeed can reliably extract.
 
 
 If you have ANY questions, feel free to contact John Dudek at ANY time, 24/7 @ (631)745-0820 or jdudek@thewestinhouston.com
