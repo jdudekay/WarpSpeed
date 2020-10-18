@@ -3,19 +3,15 @@
 **WarpSpeed** was created with the intention of streamlining the Night Audit process to help make smooth nights even smoother. Using it is designed to be as simple as possible, and really only requires a few easy steps:
 ## Step One
 Make sure the **WarpSpeed** folder is empty and ready for processing except for:
-
-WarpSpeed.bat
-
-README.md
-
-LICENSE
-
-/xpdfTools/
+* WarpSpeed.bat
+* README.md
+* LICENSE
+* /xpdfTools/
  
-If there is ANYTHING other than the above listed files/folders in the **WarpSpeed** folder on the Desktop, delete them so that the folder matches as it is shown above
+If there is ANYTHING other than the above listed files/folders in the **WarpSpeed** folder on the Desktop, delete them so that the folder contents match the above
 
 ## Step Two
-Copy all .pdf Reports to **WarpSpeed** folder:
+Copy all .pdf Reports to **WarpSpeed** folder
  
 There should be 98 reports in total and make sure to copy ALL of them. They will all be in the p2 eci folder once the Run Audit button has been clicked. (I find it easiest to select all of the reports if you have them grouped by date)
  
@@ -34,7 +30,7 @@ As shown in the **WarpSpeed** report screen, the processed files will be placed 
 ## Step Five
 Retrieve Information from the **WarpSpeed** Report
  
-The generated report within the **WarpSpeed** folder, WS_Report will currently contain the following data:
+The generated report within the **WarpSpeed** folder, WS_Report.txt will currently contain the following data:
 Bank Balance Sheet Totals
 Ops Report Statistics
 There are currently plans to expand this to include information for the M3 report as well, this guide will be updated to reflect that when it does.
