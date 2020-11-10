@@ -11,7 +11,7 @@ Make sure the **WarpSpeed** folder is empty except for the following files:
 * WarpSpeed.bat
 * README.md
 * LICENSE
-* /xpdfTools/
+* /tools/
  
 If there is ANYTHING other than the above listed files/folders in the **WarpSpeed** folder on the Desktop, delete them so that the folder contents match the above
 
@@ -43,9 +43,18 @@ The generated report within the **WarpSpeed** folder, WS_Report.txt will current
 
 As it currently stands there are no further statistics which **WarpSpeed** can reliably extract.
 
+## Miscellaneous
+### Updating WarpSpeed
+
+At the main prompt asking which date you're doing Night Audit for, enter "update" (Without quotations) and the program will update itself to the latest released version and close itself.
+
+### Error-Checking
+
+WarpSpeed will perform basic error-checking and correcting functions upon startup to help mitigate errors.
 
 If you have ANY questions, feel free to contact John Dudek at ANY time, 24/7 @ (631)745-0820 or jdudek@thewestinhouston.com
 
-
+*WarpSpeed uses parts of Xpdf to more effectively maniuplate .pdf files.*
+*The Xpdf software and documentation are copyright 1996-2019 Glyph & Cog, LLC.*
 
 *WarpSpeed: Night Audit Accelerator Copyright (C) 2020 John Dudek*
