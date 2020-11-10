@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.6.0
+set ver=1.6.1
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -94,6 +94,15 @@ if "%dat%" == "update" (
 call :updateWS
 exit
 )
+
+if not exist "*.pdf" (
+echo.
+echo FATAL ERROR: No .pdf files detected in  WarpSpeed folder, process aborted.
+echo.
+pause
+exit
+)
+
 md "OutputFolder" 2>nul
 echo.
 echo Initializing file processing . . . 
