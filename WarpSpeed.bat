@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.5.0
+set ver=1.6.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -60,40 +60,43 @@ set /a illChar=0
 
 rem Main program prompts
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-rem echo. 
 echo Type "help" for instructions
 echo.
-if not exist "xpdfTools\pdftotext.exe" (
+if not exist "tools\xpdf\pdftotext.exe" (
 echo FATAL ERROR: pdftotext.exe is missing. 
 echo WarpSpeed cannot run. 
-echo Download the latest version of WarpSpeed from https://github.com/jdudekay/WarpSpeed
+echo WarpSpeed will attempt to update and repair itself automatically.
 echo.
 pause
-goto :EOF
+call :updateWS
+exit
 )
-if not exist "xpdfTools\pdfinfo.exe" (
+if not exist "tools\xpdf\pdfinfo.exe" (
 echo FATAL ERROR: pdfinfo.exe is missing. 
 echo WarpSpeed cannot run. 
-echo Download the latest version of WarpSpeed from https://github.com/jdudekay/WarpSpeed
+echo WarpSpeed will attempt to update and repair itself automatically.
 echo.
 pause
-goto :EOF
+call :updateWS
+exit
 )
-rem set /p usr="Did you delete the Output Folder? "
-rem if "%usr%" == "help" goto :EOF
-rem set %usr% = nul 
-rem set /p usr="Did you copy ALL of the .pdf files to the WarpSpeed Folder? "
-rem if not "%usr%" == "Y" goto :EOF
+
+rem Inital user input, can input date, or run help or update functions
 set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
 set dat=%dat: =%
+rem Help function
 if "%dat%" == "help" (
 start notepad "README.md" 
 goto :restart
 )
+rem Update function
+if "%dat%" == "update" (
+call :updateWS
+exit
+)
 md "OutputFolder" 2>nul
 echo.
 echo Initializing file processing . . . 
-
 rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 set /a totFile=%totFile%-%illChar%
@@ -125,7 +128,7 @@ set "fileTXT=%~dpn1.txt"
 
 rem Create text version of .pdf to be read
 rem Parameters are set to print only the first page and in raw which condenses the data
-xpdfTools\pdftotext.exe -l 1 -raw "%filePDF%"
+tools\xpdf\pdftotext.exe -l 1 -raw "%filePDF%"
 
 rem For loop is used to call find which selects the line that contains the report name
 rem Names
@@ -212,11 +215,6 @@ ren "Detail Ticket Report_%dat% (12).pdf" "Detail Ticket Report_%dat% (Dep_15 Su
 ren "Detail Ticket Report_%dat% (13).pdf" "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf"
 ren "Detail Ticket Report_%dat% (14).pdf" "Detail Ticket Report_%dat% (Dep_1 Sub_95).pdf"
 ren "Detail Ticket Report_%dat% (15).pdf" "Detail Ticket Report_%dat% (Dep_1to99 Sub_50to99).pdf"
-rem ren "Expected Arrival Report_%dat%.pdf" "Expected Arrival Report_%dat%.pdf"
-rem ren "Expected Arrival Report_%dat% (1).pdf" "Expected Arrival Report_%dat% (1).pdf"
-rem ren "Expected Arrival Report_%dat% (2).pdf" "Expected Arrival Report_%dat% (2).pdf"
-rem ren "Expected Arrival Report_%dat% (3).pdf" "Expected Arrival Report_%dat% (3).pdf"
-rem ren "Expected Arrival Report_%dat% (4).pdf" "Expected Arrival Report_%dat% (4).pdf"
 ren "Guest Ledger Summary Report_%dat%.pdf" "Guest Ledger Summary Report_%dat% (By Name).pdf"
 ren "Guest Ledger Summary Report_%dat% (1).pdf" "Guest Ledger Summary Report_%dat% (By Room).pdf"
 ren "Guest Ledger Summary Report_%dat% (2).pdf" "Guest Ledger Summary Report_%dat% (By Room)(1).pdf"
@@ -236,12 +234,11 @@ ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%
 goto :EOF
 
 :auditPack
-rem set /p usr="Did you want to make the Audit Pack? "
-rem if "%usr%" == "Y" (
 echo Creating Night Audit Pack . . .
 md "AuditPack" 2>nul
 copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
 copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf"
+copy "Accounts Receivable Validation Report_%dat%.pdf" "AuditPack/AR Validation Report_%dat%.pdf"
 copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf"
 copy "Covers Report_%dat% (Detail All Outlets).pdf" "AuditPack/Covers Report_%dat%.pdf"
 copy "Daily Cash Out Report_%dat% (3).pdf" "AuditPack/Daily Cash Out Report_%dat%.pdf"
@@ -249,6 +246,7 @@ copy "Daily Revenue Report_%dat% (3).pdf" "AuditPack/Daily Revenue Report_%dat%.
 copy "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf" "AuditPack/Detail Ticket Report_%dat%.pdf"
 copy "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf" "AuditPack/Detail Adjustments Report_%dat%.pdf"
 copy "Expected Arrival Report_%dat% (1).pdf" "AuditPack/Expected Arrival Report_%dat%.pdf"
+copy "Guest History Exception Report_%dat%.pdf" "AuditPack/Guest History Exception Report_%dat%.pdf"
 copy "Guest Ledger Summary Report_%dat% (By Room)(1).pdf" "AuditPack/Guest Ledger Summary Report_%dat%.pdf"
 copy "High Balance Report_%dat% (Exceed Or Within 150).pdf" "AuditPack/High Balance Report_%dat%.pdf"
 copy "Managers Statistics Report_%dat%.pdf" "AuditPack/Managers Statistics Report_%dat%.pdf"
@@ -266,10 +264,7 @@ copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
 set "auditPackLoc=%cd%\AuditPack\"
 echo Audit Pack Creation complete.
 echo.
-rem pause
-rem ) else (
-rem set "auditPackLoc=Not Created"
-rem )
+
 goto :EOF
 
 :makeReport
@@ -280,11 +275,11 @@ cd..
 
 rem Pulls Bank Balance Sheet Numbers from Daily Cash Out Report
 (
-xpdfTools\pdfinfo.exe "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
+tools\xpdf\pdfinfo.exe "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
 ) > temp.txt
 for /F "tokens=1-2 delims= " %%A in ('find "Pages" "temp.txt"') do set /a "pageNum=%%B"
 set /a "pageNum=%pageNum%-1"
-xpdfTools\pdftotext.exe -raw -f %pageNum% -l %pageNum% "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
+tools\xpdf\pdftotext.exe -raw -f %pageNum% -l %pageNum% "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
 for /F "tokens=1-5 delims= " %%A in ('find "704924 AX American Express" "OutputFolder\Daily Cash Out Report_%dat% (3).txt"') do set "dcoAxSetl=%%E"
 set dcoAxSetl=%dcoAxSetl:,=%
 if "%dcoAxSetl%" == "REPORT_%dat%" ( set "dcoAxSetl=0.00" )
@@ -300,7 +295,7 @@ if "%dcoDiSetl%" == "REPORT_%dat%" ( set "dcoDiSetl=0.00" )
 del "OutputFolder\Daily Cash Out Report_%dat% (3).txt"
 
 rem Pulls Bank Balance Sheet Numbers from Daily Revenue Report
-xpdfTools\pdftotext.exe -raw "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
+tools\xpdf\pdftotext.exe -raw "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
 (
 find "Deposit Rcvd" "OutputFolder\Daily Revenue Report_%dat% (3).txt"
 ) > temp.txt
@@ -311,7 +306,7 @@ for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - MC" "temp.txt"') do s
 for /F "tokens=1-5 delims= " %%A in ('find "Deposit Rcvd - DI" "temp.txt"') do set "drrDiDep=%%E"
 
 rem Pulls Bank Balance Sheet Numbers from Bank Transaction Report
-xpdfTools\pdftotext.exe -raw "OutputFolder/Bank Transaction Report_%dat% (Blt)(1).pdf"
+tools\xpdf\pdftotext.exe -raw "OutputFolder/Bank Transaction Report_%dat% (Blt)(1).pdf"
 (
 find "*" "OutputFolder\Bank Transaction Report_%dat% (Blt)(1).txt"
 ) > temp.txt
@@ -326,7 +321,7 @@ for /F "tokens=1-10 delims= " %%A in ('find "* Total Bank Amount Deposited for D
 if "%btrDiSetl%" == "" ( set "btrDiSetl=0.00" )
 
 rem Pulls Statistics from Managers Statistics Report
-xpdfTools\pdftotext.exe -raw -l 1 "OutputFolder\Managers Statistics Report_%dat% (Summary).pdf" "temp.txt"
+tools\xpdf\pdftotext.exe -raw -l 1 "OutputFolder\Managers Statistics Report_%dat% (Summary).pdf" "temp.txt"
 setlocal enableextensions enabledelayedexpansion
 copy NUL temp2.txt > NUL
 set /A maxlines=26
@@ -349,7 +344,7 @@ for /F "tokens=1-2 delims= " %%A in ('find "Arrivals " "temp.txt"') do set "arri
 for /F "tokens=1-2 delims= " %%A in ('find "Departures " "temp.txt"') do set "departures=%%B
 
 rem Retrieve IRD Food Total
-xpdfTools\pdftotext.exe -raw -l 1 "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
+tools\xpdf\pdftotext.exe -raw -l 1 "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
 for /F "tokens=1-4 delims= " %%A in ('find "Food - Breakfast" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdBrfkst=%%D"
 set irdBrfkst=%irdBrfkst:.=%
 for /F "tokens=1-4 delims= " %%A in ('find "Food - Lunch" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdLunch=%%D"
@@ -363,7 +358,7 @@ set irdTot=%irdTot:~0,-2%.%irdTot:~-2%
 del "OutputFolder\Daily Revenue Report_%dat% (3).txt"
 
 rem Retrieve T54 Food Total
-xpdfTools\pdftotext.exe -raw -f 2 -l 2 "OutputFolder/Daily Revenue Report_%dat% (3).pdf" "temp.txt"
+tools\xpdf\pdftotext.exe -raw -f 2 -l 2 "OutputFolder/Daily Revenue Report_%dat% (3).pdf" "temp.txt"
 setlocal enableextensions enabledelayedexpansion
 copy NUL temp2.txt > NUL
 copy NUL temp3.txt > NUL
@@ -493,13 +488,6 @@ echo.
 echo.  
 ) > WS_Report.txt
 
-rem cls
-
-rem echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-rem echo.
-rem echo WarpSpeed Report:
-rem echo ------------------------------------------- 
-rem echo Operation Completed on %date% at %time%
 echo Complete.
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -512,6 +500,18 @@ echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo.
 echo Have a great rest of your shift^^!
 echo.
-
-
 goto :EOF
+
+:updateWS
+cls
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo Downloading latest release . . .
+cd..
+powershell -Command "Invoke-WebRequest https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -OutFile WarpSpeed.zip"
+cls
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo Extracting archive . . . (WarpSpeed will quit when finished)
+powershell Expand-Archive -Force WarpSpeed.zip
+del WarpSpeed.zip
+
+exit
