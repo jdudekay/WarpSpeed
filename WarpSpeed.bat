@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.6.1
+set ver=1.7.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -60,6 +60,19 @@ set /a illChar=0
 
 rem Main program prompts
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo Checking for updates . . .
+curl https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -s > temp.txt
+setlocal enabledelayedexpansion
+for /f "tokens=*" %%a in (temp.txt) do (
+  set webVer=%%a
+  set webVer=!webVer:~92,-45!
+  if "!webVer!" NEQ "%ver%" ( call :updateWS )
+)
+del temp.txt
+setlocal DisableDelayedExpansion
+
+cls
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo Type "help" for instructions
 echo.
 if not exist "tools\xpdf\pdftotext.exe" (
@@ -95,9 +108,18 @@ call :updateWS
 exit
 )
 
+if exist "OutputFolder\*.pdf" (
+echo.
+echo FATAL ERROR: .pdf files already in OutputFolder, process aborted.
+echo.
+pause
+exit
+)
+
+robocopy Z:\eci %cd% /MAXAGE:1
 if not exist "*.pdf" (
 echo.
-echo FATAL ERROR: No .pdf files detected in  WarpSpeed folder, process aborted.
+echo FATAL ERROR: .pdf files unable to be copied from p2 file, process aborted.
 echo.
 pause
 exit
