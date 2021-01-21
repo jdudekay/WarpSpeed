@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.7.0
+set ver=1.8.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -66,7 +66,10 @@ setlocal enabledelayedexpansion
 for /f "tokens=*" %%a in (temp.txt) do (
   set webVer=%%a
   set webVer=!webVer:~92,-45!
-  if "!webVer!" NEQ "%ver%" ( call :updateWS )
+  if "!webVer!" NEQ "%ver%" ( 
+    del temp.txt
+    call :updateWS 
+    )
 )
 del temp.txt
 setlocal DisableDelayedExpansion
@@ -94,18 +97,73 @@ call :updateWS
 exit
 )
 
-rem Inital user input, can input date, or run help or update functions
-set /p dat="What is the date you are doing Night Audit for? (MM.DD.YY): "
-set dat=%dat: =%
+rem Night Audit Date detection
+set month=%date:~4,2%
+set day=%date:~7,2%
+set year=%date:~10,4%
+
+
+if "%day%"=="01" (
+  if "%date:~4,2%"=="01" (
+    set nameMonth=December
+	set month=12
+	set day=31
+	set /a year=%year%-1
+  )
+) else (
+  if "%date:~4,2%"=="01" set nameMonth=January
+  if "%date:~4,2%"=="02" set nameMonth=February
+  if "%date:~4,2%"=="03" set nameMonth=March
+  if "%date:~4,2%"=="04" set nameMonth=April
+  if "%date:~4,2%"=="05" set nameMonth=May
+  if "%date:~4,2%"=="06" set nameMonth=June
+  if "%date:~4,2%"=="07" set nameMonth=July
+  if "%date:~4,2%"=="08" set nameMonth=August
+  if "%date:~4,2%"=="09" set nameMonth=September
+  if "%date:~4,2%"=="10" set nameMonth=October
+  if "%date:~4,2%"=="11" set nameMonth=November
+  if "%date:~4,2%"=="12" set nameMonth=December
+)
+
+set /a auditDay=%day%-1
+for /f "tokens=* delims=0" %%A in ("%auditDay%") do set folderDay=%%A
+
+set dat=%month%-%auditDay%-%year%
+
+echo Audit Pack will be generated for %nameMonth% %auditDay% %year%.
+echo.
+set /p input=" Would you like to begin? (y/n): "
+
+if "%input%" == "n" (
+  echo.
+  echo Closing WarpSpeed . . .
+  echo.
+  pause
+  exit
+)
+rem Manual user input, can input date, or run help or update functions
+if "%input%" == "manual" (
+  echo.
+  set /p dat="What is the date you are doing Night Audit for? (WARNING! WILL NOT WORK PROPERLY IF FORMAT IS INCORRECT):"
+  set dat=%dat: =%
+)
 rem Help function
-if "%dat%" == "help" (
+if "%input%" == "help" (
 start notepad "README.md" 
 goto :restart
 )
 rem Update function
-if "%dat%" == "update" (
+if "%input%" == "update" (
 call :updateWS
 exit
+)
+
+if "%input%" NEQ "y" (
+  echo.
+  echo Input not recognized, restarting WarpSpeed.
+  echo.
+  pause
+  goto :restart
 )
 
 if exist "OutputFolder\*.pdf" (
@@ -116,7 +174,10 @@ pause
 exit
 )
 
-robocopy Z:\eci %cd% /MAXAGE:1
+rem Copying of all .pdfs from p2 folder to WarpSpeed folder
+rem Below is actual Dir
+rem robocopy Z:\eci %cd% /MAXAGE:1
+robocopy F:\eci "%cd% "
 if not exist "*.pdf" (
 echo.
 echo FATAL ERROR: .pdf files unable to be copied from p2 file, process aborted.
@@ -145,6 +206,12 @@ rem pause
 rem Subroutine for the creation of Audit Pack
 echo.
 call :auditPack
+
+rem Copying of created Audit Pack to destination folder on shared drive
+rem Below is actual Dir
+rem robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%month% - %nameMonth% %year%\%month%-%auditDay%-%year% "
+robocopy "%cd%\OutputFolder\AuditPack\ " "F:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%month% - %nameMonth% %year%\%month%-%folderDay%-%year% "
+
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
 cls
@@ -263,9 +330,11 @@ ren "Special Services Report_%dat% (4).pdf" "Special Services Report (Ts)_%dat%.
 ren "Special Services Report_%dat% (5).pdf" "Special Services Report (SCRE)_%dat%.pdf" 
 ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%.pdf" 
 goto :EOF
+cd..
 
 :auditPack
 echo Creating Night Audit Pack . . .
+cd OutputFolder
 md "AuditPack" 2>nul
 copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
 copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf"
@@ -295,6 +364,7 @@ copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
 set "auditPackLoc=%cd%\AuditPack\"
 echo Audit Pack Creation complete.
 echo.
+cd..
 
 goto :EOF
 
@@ -302,7 +372,6 @@ goto :EOF
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
 echo Generating WarpSpeed Report . . .
-cd..
 
 rem Pulls Bank Balance Sheet Numbers from Daily Cash Out Report
 (
@@ -384,7 +453,13 @@ for /F "tokens=1-4 delims= " %%A in ('find "Food - Dinner" "OutputFolder/Daily R
 set irdDinn=%irdDinn:.=%
 for /F "tokens=1-5 delims= " %%A in ('find "Food - Late Night" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdLate=%%E"
 set irdLate=%irdLate:.=%
-set /A irdTot=!irdBrfkst!+!irdLunch!+!irdDinn!+!irdLate!
+for /F "tokens=1-2 delims= " %%A in ('find "Beer" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdBeer=%%B"
+set irdBeer=%irdBeer:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Wine" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdWine=%%B"
+set irdWine=%irdWine:.=%
+for /F "tokens=1-2 delims= " %%A in ('find "Liquor" "OutputFolder/Daily Revenue Report_%dat% (3).txt"') do set "irdLiquor=%%B"
+set irdLiquor=%irdLiquor:.=%
+set /A irdTot=!irdBrfkst!+!irdLunch!+!irdDinn!+!irdLate!+!irdBeer!+!irdWine!+!irdLiquor!
 set irdTot=%irdTot:~0,-2%.%irdTot:~-2%
 del "OutputFolder\Daily Revenue Report_%dat% (3).txt"
 
