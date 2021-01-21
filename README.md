@@ -18,7 +18,7 @@ If there is ANYTHING other than the above listed files/folders in the **WarpSpee
 ## Step Two
 ### Run **WarpSpeed**
  
-The next step once you’ve gotten the folder ready for processing, run **WarpSpeed**, at the Title Screen it will ask you to press any key to continue and then will prompt you for the date which you are doing Night Audit for. Please enter this in a MM.DD.YYYY format and hit enter
+The next step once you’ve gotten the folder ready for processing, run **WarpSpeed**, at the Title Screen it will ask you to press any key to continue after which WarpSpeed will check for updates and then attempt to automatically assess what date you are trying to do Audit for. If this date is incorrect for any reason, type "n". Advanced users can type "manual" and will be able to manually enter the data that way.
  
 **WarpSpeed** will run automatically through all of its functions, ending with generating a report. The Audit Pack and WS_Report's locations will be displayed on the Operation Complete screen, and the **WarpSpeed** report itself which contains additional information for the Night Audit will be displayed as the program closes.
 
