@@ -3,7 +3,7 @@ rem    WarpSpeed: Night Audit Accelerator - A tool made with the intention
 rem    of streamlining the Night Audit Process by renaming and sorting a large 
 rem    number of .pdf files and generating reports based off of their contents.
 rem
-rem    Copyright (C) 2020 John Dudek
+rem    Copyright (C) 2020-2021 John Dudek
 rem
 rem    This program is free software: you can redistribute it and/or modify
 rem    it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=1.8.0
+set ver=2.0.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -43,7 +43,7 @@ echo +-+-+-                               N i g h t   A u d i t   A c c e l e r 
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-                                                   v %ver%                                                  -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                       Copyright (C) 2020 John Dudek                                        -+-+-+
+echo +-+-+-                                     Copyright (C) 2020-2021 John Dudek                                     -+-+-+
 echo -+-+-+                                                                                                            +-+-+-
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -97,39 +97,7 @@ call :updateWS
 exit
 )
 
-rem Night Audit Date detection
-set month=%date:~4,2%
-set day=%date:~7,2%
-set year=%date:~10,4%
-
-
-if "%day%"=="01" (
-  if "%date:~4,2%"=="01" (
-    set nameMonth=December
-	set month=12
-	set day=31
-	set /a year=%year%-1
-  )
-) else (
-  if "%date:~4,2%"=="01" set nameMonth=January
-  if "%date:~4,2%"=="02" set nameMonth=February
-  if "%date:~4,2%"=="03" set nameMonth=March
-  if "%date:~4,2%"=="04" set nameMonth=April
-  if "%date:~4,2%"=="05" set nameMonth=May
-  if "%date:~4,2%"=="06" set nameMonth=June
-  if "%date:~4,2%"=="07" set nameMonth=July
-  if "%date:~4,2%"=="08" set nameMonth=August
-  if "%date:~4,2%"=="09" set nameMonth=September
-  if "%date:~4,2%"=="10" set nameMonth=October
-  if "%date:~4,2%"=="11" set nameMonth=November
-  if "%date:~4,2%"=="12" set nameMonth=December
-)
-
-set /a auditDay=%day%-1
-for /f "tokens=* delims=0" %%A in ("%auditDay%") do set folderDay=%%A
-
-set dat=%month%-%auditDay%-%year%
-
+call :getAuditDate
 echo Audit Pack will be generated for %nameMonth% %auditDay% %year%.
 echo.
 set /p input=" Would you like to begin? (y/n): "
@@ -176,8 +144,8 @@ exit
 
 rem Copying of all .pdfs from p2 folder to WarpSpeed folder
 rem Below is actual Dir
-rem robocopy Z:\eci %cd% /MAXAGE:1
-robocopy F:\eci "%cd% "
+robocopy Z:\eci %cd% /MAXAGE:1
+rem robocopy F:\eci "%cd% "
 if not exist "*.pdf" (
 echo.
 echo FATAL ERROR: .pdf files unable to be copied from p2 file, process aborted.
@@ -209,8 +177,8 @@ call :auditPack
 
 rem Copying of created Audit Pack to destination folder on shared drive
 rem Below is actual Dir
-rem robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%month% - %nameMonth% %year%\%month%-%auditDay%-%year% "
-robocopy "%cd%\OutputFolder\AuditPack\ " "F:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%month% - %nameMonth% %year%\%month%-%folderDay%-%year% "
+robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
+rem robocopy "%cd%\OutputFolder\AuditPack\ " "F:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
 
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
@@ -529,7 +497,7 @@ echo WarpSpeed Report:
 echo ------------------------------------------- 
 echo Operation Completed on %date% at %time%
 echo.
-echo Audit Pack Location: %auditPackLoc%
+echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
 echo WarpSpeed Report Location: %cd%\WS_Report.txt
 echo.
@@ -598,7 +566,7 @@ echo Complete.
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo.
-echo Audit Pack Location: %auditPackLoc%
+echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
 echo WarpSpeed Report Location: %cd%\WS_Report.txt
 echo.
@@ -606,6 +574,110 @@ echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo.
 echo Have a great rest of your shift^^!
 echo.
+goto :EOF
+
+:getAuditDate
+rem Night Audit Date detection
+set month=%date:~4,2%
+set day=%date:~7,2%
+set year=%date:~10,4%
+
+rem Leap Year Calculation
+set /a leapConA = "%year%" %% 4
+set /a leapConB = "%year%" %% 100
+set /a leapConC = "%year%" %% 400
+if "%leapConA%"=="0" (
+	if "%leapConB%" NEQ "0" (
+		set leap=1
+		)
+	)
+if "%leapConC%"=="0" (
+	set leap=1
+	)
+
+rem Accounts for the current day being the first day of the month
+if "%day%"=="01" (
+  if "%month%"=="01" (
+    set nameMonth=December
+	set month=12
+	set auditDay=31
+	set /a year=%year%-1
+  )
+    if "%month%"=="02" (
+    set nameMonth=January
+	set month=01
+	set auditDay=31
+  )
+    if "%month%"=="03" (
+    set nameMonth=February
+	set month=02
+	set auditDay=28		
+	if "%leap%"=="1" (
+		set auditDay=29
+	)	
+  )
+    if "%month%"=="04" (
+	set nameMonth=March
+	set month=03
+	set auditDay=31
+  )
+    if "%month%"=="05" (
+    set nameMonth=April
+	set month=04
+	set auditDay=30
+  )
+    if "%month%"=="06" (
+    set nameMonth=May
+	set month=05
+	set auditDay=31
+  )
+    if "%month%"=="07" (
+    set nameMonth=June
+	set month=06
+	set auditDay=30
+  )
+    if "%month%"=="08" (
+    set nameMonth=July
+	set month=07
+	set auditDay=31
+  )
+    if "%month%"=="09" (
+    set nameMonth=August
+	set month=08
+	set auditDay=31
+  )
+    if "%month%"=="10" (
+    set nameMonth=September
+	set month=09
+	set auditDay=30
+  )
+    if "%month%"=="11" (
+    set nameMonth=October
+	set month=10
+	set auditDay=31
+  )
+    if "%month%"=="12" (
+    set nameMonth=November
+	set month=11
+	set auditDay=30
+  )
+) else (
+  if "%month%"=="01" set nameMonth=January
+  if "%month%"=="02" set nameMonth=February
+  if "%month%"=="03" set nameMonth=March
+  if "%month%"=="04" set nameMonth=April
+  if "%month%"=="05" set nameMonth=May
+  if "%month%"=="06" set nameMonth=June
+  if "%month%"=="07" set nameMonth=July
+  if "%month%"=="08" set nameMonth=August
+  if "%month%"=="09" set nameMonth=September
+  if "%month%"=="10" set nameMonth=October
+  if "%month%"=="11" set nameMonth=November
+  if "%month%"=="12" set nameMonth=December
+  set /a auditDay=%day%-1
+)
+
+set dat=%month%-%auditDay%-%year%
 goto :EOF
 
 :updateWS
