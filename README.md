@@ -20,14 +20,15 @@ If there is ANYTHING other than the above listed files/folders in the **WarpSpee
  
 The next step once you’ve gotten the folder ready for processing, run **WarpSpeed**, at the Title Screen it will ask you to press any key to continue after which WarpSpeed will check for updates and then attempt to automatically assess what date you are trying to do Audit for. If this date is incorrect for any reason, type "n". Advanced users can type "manual" and will be able to manually enter the data that way.
  
-**WarpSpeed** will run automatically through all of its functions, ending with generating a report. The Audit Pack and WS_Report's locations will be displayed on the Operation Complete screen, and the **WarpSpeed** report itself which contains additional information for the Night Audit will be displayed as the program closes.
+**WarpSpeed** will run automatically through the following processes:
+- Copying of .pdfs into current folder
+- Analysis of .pdfs
+- Renaming and copying of .pdfs into Back-Up folder and final Audit Pack folder
+- Generation of WS_Report.txt
+
+The Audit Pack Back-Up and WS_Report's locations will be displayed on the Operation Complete screen, and the **WarpSpeed** report itself which contains additional information for the Night Audit will be displayed before the program closes.
 
 ## Step Three
-### Copy reports to Night Audit folder
-
-As shown in the **WarpSpeed** report screen, the processed files will be placed in a folder called OutputFolder within the **WarpSpeed** folder and the actual Audit Pack will be placed in a folder called AuditPack within the OutputFolder folder. The only additional reports that need to be run for the Audit Pack will be the Occupational Forecast reports which need to be run manually.
-
-## Step Four
 ### Retrieve Information from the **WarpSpeed** Report
  
 The generated report within the **WarpSpeed** folder, WS_Report.txt will currently contain the following data:
@@ -52,4 +53,4 @@ If you have ANY questions, feel free to contact John Dudek at ANY time, 24/7 @ (
 *WarpSpeed uses parts of Xpdf to more effectively maniuplate .pdf files.*
 *The Xpdf software and documentation are copyright 1996-2019 Glyph & Cog, LLC.*
 
-*WarpSpeed: Night Audit Accelerator Copyright (C) 2020 John Dudek*
+*WarpSpeed: Night Audit Accelerator Copyright (C) 2020-2021 John Dudek*
