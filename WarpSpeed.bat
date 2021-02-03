@@ -100,6 +100,7 @@ exit
 call :getAuditDate
 echo Audit Pack will be generated for %nameMonth% %auditDay% %year%.
 echo.
+rem set /a debug=0
 set /p input=" Would you like to begin? (y/n): "
 
 if "%input%" == "n" (
@@ -114,7 +115,8 @@ if "%input%" == "debug" (
   echo.
   set /p dat="What is the date you are doing Night Audit for? (WARNING! WILL NOT WORK PROPERLY IF FORMAT IS INCORRECT):"
   set dat=%dat: =%
-  set input="y"
+  set input=y
+  set /a debug=1
 )
 rem Help function
 if "%input%" == "help" (
@@ -144,12 +146,14 @@ exit
 )
 
 rem Copying of all .pdfs from p2 folder to WarpSpeed folder
-rem Below is actual Dir
-robocopy Z:\eci %cd% /MAXAGE:1
-rem robocopy F:\eci "%cd% "
+if "%debug%" == "1" (
+	robocopy "%cd%\debug\ " %cd%
+) else (
+	robocopy Z:\eci %cd% /MAXAGE:1
+)
 if not exist "*.pdf" (
 echo.
-echo FATAL ERROR: .pdf files unable to be copied from p2 file, process aborted.
+echo FATAL ERROR: .pdf files unable to be copied, process aborted.
 echo.
 pause
 exit
@@ -177,10 +181,11 @@ echo.
 call :auditPack
 
 rem Copying of created Audit Pack to destination folder on shared drive
-rem Below is actual Dir
-robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
-rem robocopy "%cd%\OutputFolder\AuditPack\ " "F:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
-
+if "%debug%" == "1" (
+	robocopy "%cd%\OutputFolder\AuditPack\ " "%cd%\debug\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
+) else (
+	robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
+)
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
 cls
@@ -334,6 +339,7 @@ copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
 set "auditPackLoc=%cd%\AuditPack\"
 echo Audit Pack Creation complete.
 echo.
+cd..
 
 goto :EOF
 
@@ -341,7 +347,6 @@ goto :EOF
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
 echo Generating WarpSpeed Report . . .
-cd..
 
 rem Pulls Bank Balance Sheet Numbers from Daily Cash Out Report
 (
@@ -582,6 +587,7 @@ rem Night Audit Date detection
 set month=%date:~4,2%
 set day=%date:~7,2%
 set year=%date:~10,4%
+set /a auditDay=%day%-1
 
 rem Leap Year Calculation
 set /a leapConA = "%year%" %% 4
@@ -675,7 +681,6 @@ if "%day%"=="01" (
   if "%month%"=="10" set nameMonth=October
   if "%month%"=="11" set nameMonth=November
   if "%month%"=="12" set nameMonth=December
-  set /a auditDay=%day%-1
 )
 
 rem Removes leading 0 on single digit information
