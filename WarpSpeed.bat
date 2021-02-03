@@ -110,10 +110,11 @@ if "%input%" == "n" (
   exit
 )
 rem Manual user input, can input date, or run help or update functions
-if "%input%" == "manual" (
+if "%input%" == "debug" (
   echo.
   set /p dat="What is the date you are doing Night Audit for? (WARNING! WILL NOT WORK PROPERLY IF FORMAT IS INCORRECT):"
   set dat=%dat: =%
+  set input="y"
 )
 rem Help function
 if "%input%" == "help" (
@@ -333,7 +334,6 @@ copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
 set "auditPackLoc=%cd%\AuditPack\"
 echo Audit Pack Creation complete.
 echo.
-cd..
 
 goto :EOF
 
@@ -341,6 +341,7 @@ goto :EOF
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
 echo Generating WarpSpeed Report . . .
+cd..
 
 rem Pulls Bank Balance Sheet Numbers from Daily Cash Out Report
 (
@@ -486,7 +487,6 @@ for /F "tokens=1-2 delims= " %%A in ('find "Liquor" "temp3.txt"') do set "patLiq
 set patLiquor=%patLiquor:.=%
 set /A t54Tot=!t54Brfkst!+!t54Lunch!+!t54Dinner!+!t54Beer!+!t54Wine!+!t54Liquor!+!patFood!+!patBeer!+!patWine!+!patLiquor!
 set t54Tot=%t54Tot:~0,-2%.%t54Tot:~-2%
-
 
 del temp.txt
 del temp2.txt
@@ -678,13 +678,10 @@ if "%day%"=="01" (
   set /a auditDay=%day%-1
 )
 
-rem Removes leading 0 on single digit informoation
+rem Removes leading 0 on single digit information
 if %month% LEQ 9 (
 	set month=%month:~1,1%
-	)
-if %auditDay% LEQ 9 (
-	set auditDay=%auditDay:~1,1%
-	)
+)
 
 set dat=%month%-%auditDay%-%year%
 goto :EOF
