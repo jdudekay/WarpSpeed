@@ -1,6 +1,6 @@
 # Welcome to WarpSpeed!
  
-**WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all 98 (Now 99!) Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report. 
+**WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all ~~98~~ 99 Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report. 
 
 The scope of **WarpSpeed** has widened over time and is now also designed to analyze a list of guests, compare them against a list of packages, and produce a report of said guests via a cheekily named **WarpDrive** subroutine. (Documentation on how to use this is given in the Miscellaneous section below!)
 
