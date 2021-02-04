@@ -1,6 +1,8 @@
 # Welcome to WarpSpeed!
  
-**WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all 98 Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report. 
+**WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all 98 (Now 99!) Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report. 
+
+The scope of **WarpSpeed** has widened over time and is now also designed to analyze a list of guests, compare them against a list of packages, and produce a report of said guests via a cheekily named **WarpDrive** subroutine. (Documentation on how to use this is given in the Miscellaneous section below!)
 
 Using **WarpSpeed** is designed to be as simple as possible, and only requires a few easy steps:
 
@@ -40,6 +42,16 @@ The generated report within the **WarpSpeed** folder, WS_Report.txt will current
 As it currently stands there are no further statistics which **WarpSpeed** can reliably extract.
 
 ## Miscellaneous
+### WarpDrive
+
+If **WarpSpeed** is started with a .pdf named *rmrtver.pdf* within the /WarpSpeed/ directory, **WarpDrive** will automatically engage and compare the list of guests contained within the .pdf to user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and will generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
+
+All Package Description files used by **WarpSpeed** will be .txt filetype and have the following format:
+
+PKG_LIST
+NAME AND DESCRIPTION OF PACKAGE
+99RATE
+
 ### Updating WarpSpeed
 
 At the main prompt asking which date you're doing Night Audit for, enter "update" (Without quotations) and the program will update itself to the latest released version and close itself.
@@ -50,7 +62,7 @@ WarpSpeed will perform basic error-checking and correcting functions upon startu
 
 If you have ANY questions, feel free to contact John Dudek at ANY time, 24/7 @ (631)745-0820 or jdudek@thewestinhouston.com
 
-*WarpSpeed uses parts of Xpdf to more effectively maniuplate .pdf files.*
+*WarpSpeed uses parts of Xpdf.*
 *The Xpdf software and documentation are copyright 1996-2019 Glyph & Cog, LLC.*
 
 *WarpSpeed: Night Audit Accelerator Copyright (C) 2020-2021 John Dudek*
