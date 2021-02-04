@@ -727,13 +727,14 @@ echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 setlocal EnableDelayedExpansion
 FINDSTR /M /C:"PKG_LIST" "tools\packages\*.txt" > temp.txt
 for /F "delims=" %%A in (temp.txt) do (
-	for /F "skip=1 delims=" %%G IN (%%A) DO if not defined packDesc set "packDesc=%%G"
+	set packDesc=0
+	for /F "skip=1 delims=" %%B IN (%%A) DO if !packDesc! EQU 0 set "packDesc=%%B"
 	FINDSTR /i /L /g:"%%A" "rmrtver.txt" > temp2.txt
 	if !errorlevel! EQU 0 echo. >> WD_Report.txt
 	if !errorlevel! EQU 0 echo !packDesc! >> WD_Report.txt
 	if !errorlevel! EQU 0 echo =============================== >> WD_Report.txt
-	for /F "delims=" %%B in (temp2.txt) do (
-		set packRoom=%%B
+	for /F "delims=" %%C in (temp2.txt) do (
+		set packRoom=%%C
 		set packRoom=!packRoom:~0,4!
 		echo !packRoom! >> WD_Report.txt
 	)
