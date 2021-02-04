@@ -97,10 +97,18 @@ call :updateWS
 exit
 )
 
+if exist "rmrtver.pdf" (
+	echo Room Rate Verification Report detected: Engaging WarpDrive
+	echo.
+	pause
+	call :warpDrive
+	pause
+	exit
+)
+
 call :getAuditDate
 echo Audit Pack will be generated for %nameMonth% %auditDay% %year%.
 echo.
-rem set /a debug=0
 set /p input=" Would you like to begin? (y/n): "
 
 if "%input%" == "n" (
@@ -139,7 +147,14 @@ if "%input%" NEQ "y" (
 
 if exist "OutputFolder\*.pdf" (
 echo.
-echo FATAL ERROR: .pdf files already in OutputFolder, process aborted.
+echo FATAL ERROR: .pdf files already in Output Folder, process aborted.
+echo.
+pause
+exit
+)
+if exist "*.pdf" (
+echo.
+echo FATAL ERROR: .pdf files already in WarpSpeed Folder, process aborted.
 echo.
 pause
 exit
@@ -265,8 +280,8 @@ ren "Bank Transaction Report_%dat% (4).pdf" "Bank Transaction Report_%dat% (Blt)
 ren "Bank Transaction Report_%dat% (5).pdf" "Bank Transaction Report_%dat% (Blt)(1).pdf"
 ren "Complimentary Rooms Report_%dat%.pdf" "Complimentary Rooms Report_%dat% (Inhouse).pdf"
 ren "Complimentary Rooms Report_%dat% (1).pdf" "Complimentary Rooms Report_%dat% (All).pdf"
-ren "Covers Report_%dat%.pdf" "Covers Report_%dat% (Detail All Outlets).pdf"
-ren "Covers Report_%dat% (1).pdf" "Covers Report_%dat% (Detail T54).pdf"
+ren "Covers Report_%dat%.pdf" "Covers Report_%dat% (Detail YTD).pdf"
+ren "Covers Report_%dat% (1).pdf" "Covers Report_%dat% (Detail).pdf"
 ren "Covers Report_%dat% (2).pdf" "Covers Report_%dat% (Summary).pdf"
 ren "Daily Revenue Report_%dat% (2).pdf" "Daily Revenue Report_%dat% (Inc YTD Budget).pdf"
 ren "Daily Revenue Report_%dat% (3).pdf" "Daily Revenue Report_%dat% (2).pdf"
@@ -314,7 +329,7 @@ copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Ba
 copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf"
 copy "Accounts Receivable Validation Report_%dat%.pdf" "AuditPack/AR Validation Report_%dat%.pdf"
 copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf"
-copy "Covers Report_%dat% (Detail All Outlets).pdf" "AuditPack/Covers Report_%dat%.pdf"
+copy "Covers Report_%dat% (Detail).pdf" "AuditPack/Covers Report_%dat%.pdf"
 copy "Daily Cash Out Report_%dat% (3).pdf" "AuditPack/Daily Cash Out Report_%dat%.pdf"
 copy "Daily Revenue Report_%dat% (3).pdf" "AuditPack/Daily Revenue Report_%dat%.pdf"
 copy "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf" "AuditPack/Detail Ticket Report_%dat%.pdf"
@@ -588,7 +603,6 @@ set month=%date:~4,2%
 set day=%date:~7,2%
 set year=%date:~10,4%
 set /a auditDay=%day%-1
-
 rem Leap Year Calculation
 set /a leapConA = "%year%" %% 4
 set /a leapConB = "%year%" %% 100
@@ -601,7 +615,6 @@ if "%leapConA%"=="0" (
 if "%leapConC%"=="0" (
 	set leap=1
 	)
-
 rem Accounts for the current day being the first day of the month
 if "%day%"=="01" (
   if "%month%"=="01" (
@@ -682,13 +695,132 @@ if "%day%"=="01" (
   if "%month%"=="11" set nameMonth=November
   if "%month%"=="12" set nameMonth=December
 )
-
 rem Removes leading 0 on single digit information
 if %month% LEQ 9 (
 	set month=%month:~1,1%
 )
-
 set dat=%month%-%auditDay%-%year%
+goto :EOF
+
+:warpDrive
+rem WaprDrive Package Detector
+set wdVer=1.0
+copy NUL rmrtver.txt > NUL
+copy NUL temp2.txt > NUL
+pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
+cls
+echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
+echo.
+echo Scanning for Packages . . .
+setlocal EnableDelayedExpansion
+find "17MDAS" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "17MD9F" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "17MDU2" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "17MD9G" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "21LDFI" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "21PKGB" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "21LDFK" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "21WA6M" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "21LDFO" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "37XPCL" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "37XPCJ" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+	set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "37XPCK" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+		set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+find "37XPDS" "rmrtver.txt" > temp.txt
+for /F "skip=2 delims=" %%A in (temp.txt) do (
+	set packRoom=%%A
+		set packRoom=!packRoom:~0,4!
+	echo !packRoom! >> temp2.txt
+)
+setlocal DisableDelayedExpansion
+(
+echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
+echo.
+echo WarpDrive Report:
+echo ------------------------------------------- 
+echo Operation Completed on %date% at %time%
+echo.
+echo WarpDrive Report Location: %cd%\WD_Report.txt
+echo.
+echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo.
+echo Rooms with Valet Included:
+echo =============================== 
+) > WD_Report.txt
+sort temp2.txt >> WD_Report.txt
+del rmrtver.txt
+del temp.txt
+del temp2.txt
+start notepad "WD_Report.txt"
+echo Complete.
+echo.
+echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo.
+echo WarpDrive Report Location: %cd%\WD_Report.txt
+echo.
+echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo.
+echo Have a great rest of your shift^!
+echo.
 goto :EOF
 
 :updateWS
