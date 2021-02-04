@@ -48,9 +48,10 @@ If **WarpSpeed** is started with a .pdf named *rmrtver.pdf* within the /WarpSpee
 
 All Package Description files used by **WarpSpeed** will be .txt filetype and have the following format:
 
-PKG_LIST
-NAME AND DESCRIPTION OF PACKAGE
-99RATE
+PKG_LIST  
+NAME AND DESCRIPTION OF PACKAGE  
+99RATE  
+99RATE  
 
 ### Updating WarpSpeed
 
