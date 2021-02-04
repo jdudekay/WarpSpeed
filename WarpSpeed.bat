@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=2.0.1
+set ver=2.1.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -704,94 +704,15 @@ goto :EOF
 
 :warpDrive
 rem WaprDrive Package Detector
-set wdVer=1.0
+set wdVer=1.1
 copy NUL rmrtver.txt > NUL
+copy NUL temp.txt > NUL
 copy NUL temp2.txt > NUL
 tools\xpdf\pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
 cls
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
 echo.
 echo Scanning for Packages . . .
-setlocal EnableDelayedExpansion
-find "17MDAS" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "17MD9F" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "17MDU2" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "17MD9G" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "21LDFI" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "21PKGB" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "21LDFK" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "21WA6M" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "21LDFO" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "37XPCL" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "37XPCJ" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-	set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "37XPCK" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-		set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-find "37XPDS" "rmrtver.txt" > temp.txt
-for /F "skip=2 delims=" %%A in (temp.txt) do (
-	set packRoom=%%A
-		set packRoom=!packRoom:~0,4!
-	echo !packRoom! >> temp2.txt
-)
-setlocal DisableDelayedExpansion
 (
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
 echo.
@@ -802,11 +723,22 @@ echo.
 echo WarpDrive Report Location: %cd%\WD_Report.txt
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-echo.
-echo Rooms with Valet Included:
-echo =============================== 
 ) > WD_Report.txt
-sort temp2.txt >> WD_Report.txt
+setlocal EnableDelayedExpansion
+FINDSTR /M /C:"PKG_LIST" "tools\packages\*.txt" > temp.txt
+for /F "delims=" %%A in (temp.txt) do (
+	for /F "skip=1 delims=" %%G IN (%%A) DO if not defined packDesc set "packDesc=%%G"
+	FINDSTR /i /L /g:"%%A" "rmrtver.txt" > temp2.txt
+	if !errorlevel! EQU 0 echo. >> WD_Report.txt
+	if !errorlevel! EQU 0 echo !packDesc! >> WD_Report.txt
+	if !errorlevel! EQU 0 echo =============================== >> WD_Report.txt
+	for /F "delims=" %%B in (temp2.txt) do (
+		set packRoom=%%B
+		set packRoom=!packRoom:~0,4!
+		echo !packRoom! >> WD_Report.txt
+	)
+)
+setlocal DisableDelayedExpansion
 del rmrtver.txt
 del temp.txt
 del temp2.txt
