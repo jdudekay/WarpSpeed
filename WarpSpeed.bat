@@ -707,7 +707,7 @@ rem WaprDrive Package Detector
 set wdVer=1.0
 copy NUL rmrtver.txt > NUL
 copy NUL temp2.txt > NUL
-pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
+tools\xpdf\pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
 cls
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
 echo.
