@@ -107,7 +107,7 @@ if exist "rmrtver.pdf" (
 )
 
 call :getAuditDate
-echo Audit Pack will be generated for %nameMonth% %auditDay% %year%.
+echo Audit Pack will be generated for %nameMonth% %auditDay%, %year%.
 echo.
 set /p input=" Would you like to begin? (y/n): "
 
@@ -182,14 +182,12 @@ for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 set /a totFile=%totFile%-%illChar%
 echo Initial renaming and moving sequence complete.
 echo.
-rem pause
 
 rem Cleanup subroutine
 echo.
 call :cleanUp
 echo File Name clean-up complete.
 echo.
-rem pause
 
 rem Subroutine for the creation of Audit Pack
 echo.
@@ -708,11 +706,17 @@ set wdVer=1.1
 copy NUL rmrtver.txt > NUL
 copy NUL temp.txt > NUL
 copy NUL temp2.txt > NUL
-tools\xpdf\pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
 cls
-echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
-echo.
-echo Scanning for Packages . . .
+echo WarpDrive: Room Package Detector by John Dudek
+echo ##############################################
+echo # __      __             ___      _          #
+echo # \ \    / /_ _ _ _ _ __^|   \ _ _^(_^)_ _____  #
+echo #  \ \/\/ / _^` ^| ^'_^| ^'_ \ ^|^) ^| ^'_^| \ V / -_^) #
+echo #   \_/\_/\__,_^|_^| ^| .__/___/^|_^| ^|_^|\_/\___^| #
+echo #                  ^|_^|                 v%wdVer%  #
+echo #                                            #
+echo ##############################################
+echo Scanning for Packages . . .                                   
 (
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
 echo.
@@ -725,6 +729,7 @@ echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ) > WD_Report.txt
 setlocal EnableDelayedExpansion
+tools\xpdf\pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
 FINDSTR /M /C:"PKG_LIST" "tools\packages\*.txt" > temp.txt
 for /F "delims=" %%A in (temp.txt) do (
 	set packDesc=0
@@ -755,6 +760,7 @@ echo.
 echo Have a great rest of your shift^!
 echo.
 goto :EOF
+
 
 :updateWS
 cls
