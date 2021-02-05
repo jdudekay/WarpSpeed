@@ -64,6 +64,6 @@ WarpSpeed will perform basic error-checking and correcting functions upon startu
 If you have ANY questions, feel free to contact John Dudek at ANY time, 24/7 @ (631)745-0820 or jdudek@thewestinhouston.com
 
 *WarpSpeed uses parts of Xpdf.*
-*The Xpdf software and documentation are copyright 1996-2019 Glyph & Cog, LLC.*
+*The Xpdf software and documentation are copyright 1996-2021 Glyph & Cog, LLC.*
 
 *WarpSpeed: Night Audit Accelerator Copyright (C) 2020-2021 John Dudek*
