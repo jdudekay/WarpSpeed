@@ -805,12 +805,12 @@ goto :EOF
 :updateWS
 cls
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo Downloading WarpSpeed v!webVer! . . .
+echo Downloading WarpSpeed v%webVer% . . .
 cd..
 powershell -Command "Invoke-WebRequest https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -OutFile WarpSpeed.zip"
 cls
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo Extracting and Installing WarpSpeed v!webVer! . . . (WarpSpeed will quit when finished)
+echo Extracting and Installing WarpSpeed v%webVer% . . . (WarpSpeed will quit when finished)
 powershell Expand-Archive -Force WarpSpeed.zip
 del WarpSpeed.zip
 
