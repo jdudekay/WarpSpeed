@@ -44,18 +44,20 @@ As it currently stands there are no further statistics which **WarpSpeed** can r
 ## Miscellaneous
 ### WarpDrive
 
-If **WarpSpeed** is started with a .pdf named *rmrtver.pdf* within the /WarpSpeed/ directory, **WarpDrive** will automatically engage and compare the list of guests contained within the .pdf to user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and will generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
+If **WarpSpeed** is started with either the Room Rate Verification Report named *rmrtver.pdf* or the Expected Arrivals Report named *exparvls* within the /WarpSpeed/ directory, **WarpDrive** will engage and compare the list of guests contained within either .pdf to user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and will generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
+The user will be prompted to select either All Packages or just Valet Packages, after which WarpDrive will go through it's normal processes.
 
 All Package Description files used by **WarpSpeed** will be .txt filetype and have the following format:
 
-PKG_LIST  
-NAME AND DESCRIPTION OF PACKAGE  
-99RATE  
-99RATE  
+*PKG_LIST*  
+*NAME AND DESCRIPTION OF PACKAGE*  
+*99RATE*  
+*99RATE*  
+*etc...*  
 
 ### Updating WarpSpeed
 
-At the main prompt asking which date you're doing Night Audit for, enter "update" (Without quotations) and the program will update itself to the latest released version and close itself.
+At the main prompt confirming which date you're doing Night Audit for, enter "update" (Without quotations) and the program will update itself to the latest released version and close itself.
 
 ### Error-Checking
 
