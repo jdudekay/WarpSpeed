@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=2.1.0
+set ver=2.2.0
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -68,6 +68,12 @@ for /f "tokens=*" %%a in (temp.txt) do (
   set webVer=!webVer:~92,-45!
   if "!webVer!" NEQ "%ver%" ( 
     del temp.txt
+	echo.
+	echo Current Version: %ver%
+	echo Latest Release: !webVer!
+	echo.
+	echo WarpSpeed will now update.
+	pause
     call :updateWS 
     )
 )
@@ -101,6 +107,17 @@ if exist "rmrtver.pdf" (
 	echo Room Rate Verification Report detected: Engaging WarpDrive
 	echo.
 	pause
+	set wdRep="rmrtver"
+	call :warpDrive
+	pause
+	exit
+)
+
+if exist "exparvl.pdf" (
+	echo Expected Arrivals Report detected: Engaging WarpDrive
+	echo.
+	pause
+	set wdRep="exparvl"
 	call :warpDrive
 	pause
 	exit
@@ -701,11 +718,8 @@ set dat=%month%-%auditDay%-%year%
 goto :EOF
 
 :warpDrive
-rem WaprDrive Package Detector
-set wdVer=1.1
-copy NUL rmrtver.txt > NUL
-copy NUL temp.txt > NUL
-copy NUL temp2.txt > NUL
+rem WarpDrive Package Detector
+set wdVer=1.2
 cls
 echo WarpDrive: Room Package Detector by John Dudek
 echo ##############################################
@@ -716,6 +730,28 @@ echo #   \_/\_/\__,_^|_^| ^| .__/___/^|_^| ^|_^|\_/\___^| #
 echo #                  ^|_^|                 v%wdVer%  #
 echo #                                            #
 echo ##############################################
+echo.
+echo Which packages would you like to find?:
+echo  1. All Packages
+echo  2. Valet Packages
+echo.
+set /p input=" Please make a selection (1|2): "
+if %input% EQU 1 (
+	set wdKey="PKG_LIST"
+	) else (
+	if %input% EQU 2 (
+		set wdKey="Valet"
+		) else (
+		echo.
+		echo Invalid Input.
+		echo.
+		pause
+		goto :warpDrive
+		)
+	)
+)
+
+echo.
 echo Scanning for Packages . . .                                   
 (
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
@@ -729,23 +765,28 @@ echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ) > WD_Report.txt
 setlocal EnableDelayedExpansion
-tools\xpdf\pdftotext.exe -raw -nopgbrk "rmrtver.pdf"
-FINDSTR /M /C:"PKG_LIST" "tools\packages\*.txt" > temp.txt
+tools\xpdf\pdftotext.exe -raw -nopgbrk "%wdRep%.pdf"
+FINDSTR /M /C:"%wdKey%" "tools\packages\*.txt" > temp.txt
 for /F "delims=" %%A in (temp.txt) do (
 	set packDesc=0
 	for /F "skip=1 delims=" %%B IN (%%A) DO if !packDesc! EQU 0 set "packDesc=%%B"
-	FINDSTR /i /L /g:"%%A" "rmrtver.txt" > temp2.txt
-	if !errorlevel! EQU 0 echo. >> WD_Report.txt
-	if !errorlevel! EQU 0 echo !packDesc! >> WD_Report.txt
-	if !errorlevel! EQU 0 echo =============================== >> WD_Report.txt
+	FINDSTR /i /L /g:"%%A" "%wdRep%.txt" > temp2.txt
+	if !errorlevel! EQU 0 echo.>>WD_Report.txt
+	if !errorlevel! EQU 0 echo !packDesc!>>WD_Report.txt
+	if !errorlevel! EQU 0 echo ===============================>>WD_Report.txt
 	for /F "delims=" %%C in (temp2.txt) do (
 		set packRoom=%%C
 		set packRoom=!packRoom:~0,4!
-		echo !packRoom! >> WD_Report.txt
+		set packRoom=!packRoom: =!
+		set /a roomCheck=packRoom/1
+		if "!roomCheck!" NEQ "!packRoom!" (
+		echo Package with No Assigned Room>>WD_Report.txt
+		) else (
+		echo !packRoom!>>WD_Report.txt)
 	)
 )
 setlocal DisableDelayedExpansion
-del rmrtver.txt
+del %wdRep%.txt
 del temp.txt
 del temp2.txt
 start notepad "WD_Report.txt"
@@ -761,16 +802,15 @@ echo Have a great rest of your shift^!
 echo.
 goto :EOF
 
-
 :updateWS
 cls
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo Downloading latest release . . .
+echo Downloading WarpSpeed v!webVer! . . .
 cd..
 powershell -Command "Invoke-WebRequest https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -OutFile WarpSpeed.zip"
 cls
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo Extracting archive . . . (WarpSpeed will quit when finished)
+echo Extracting and Installing WarpSpeed v!webVer! . . . (WarpSpeed will quit when finished)
 powershell Expand-Archive -Force WarpSpeed.zip
 del WarpSpeed.zip
 
