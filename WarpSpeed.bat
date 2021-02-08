@@ -617,7 +617,10 @@ rem Night Audit Date detection
 set month=%date:~4,2%
 set day=%date:~7,2%
 set year=%date:~10,4%
-set /a auditDay=%day%-1
+if %day% LEQ 9 (
+	set day=%day:~1,1%
+)
+set /a auditDay="%day%"-1
 rem Leap Year Calculation
 set /a leapConA = "%year%" %% 4
 set /a leapConB = "%year%" %% 100
