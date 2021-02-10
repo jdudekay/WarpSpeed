@@ -17,7 +17,23 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=2.2.0
+set ver=2.3.0
+call :warpSpeed
+:updateWS
+cls
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo Downloading WarpSpeed v%webVer% . . .
+cd..
+powershell -Command "Invoke-WebRequest https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -OutFile WarpSpeed.zip"
+cls
+echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo Extracting and Installing WarpSpeed v%webVer% . . . (WarpSpeed will restart when finished)
+powershell Expand-Archive -Force WarpSpeed.zip
+del WarpSpeed.zip
+cd WarpSpeed
+start cmd /K WarpSpeed.bat
+exit
+:warpSpeed
 cls
 echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -54,9 +70,6 @@ cls
 
 setlocal EnableExtensions DisableDelayedExpansion
 set /a count=1
-set /a totFile=0
-set /a dupFile=0
-set /a illChar=0
 
 rem Main program prompts
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
@@ -84,6 +97,7 @@ cls
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo Type "help" for instructions
 echo.
+
 if not exist "tools\xpdf\pdftotext.exe" (
 echo FATAL ERROR: pdftotext.exe is missing. 
 echo WarpSpeed cannot run. 
@@ -137,9 +151,6 @@ if "%input%" == "n" (
 )
 rem Manual user input, can input date, or run help or update functions
 if "%input%" == "debug" (
-  echo.
-  set /p dat="What is the date you are doing Night Audit for? (WARNING! WILL NOT WORK PROPERLY IF FORMAT IS INCORRECT):"
-  set dat=%dat: =%
   set input=y
   set /a debug=1
 )
@@ -162,13 +173,8 @@ if "%input%" NEQ "y" (
   goto :restart
 )
 
-if exist "OutputFolder\*.pdf" (
-echo.
-echo FATAL ERROR: .pdf files already in Output Folder, process aborted.
-echo.
-pause
-exit
-)
+del OutputFolder\ /q 2>nul
+
 if exist "*.pdf" (
 echo.
 echo FATAL ERROR: .pdf files already in WarpSpeed Folder, process aborted.
@@ -177,11 +183,16 @@ pause
 exit
 )
 
+setlocal EnableDelayedExpansion
+set "startTime=%time: =0%"
+
 rem Copying of all .pdfs from p2 folder to WarpSpeed folder
+echo.
+echo Copying reports from eci folder . . .
 if "%debug%" == "1" (
-	robocopy "%cd%\debug\ " %cd%
+	robocopy "%cd%\debug\ " %cd% /NFL /NDL /NJH /NJS /nc /ns /np >nul
 ) else (
-	robocopy Z:\eci %cd% /MAXAGE:1
+	robocopy Z:\eci %cd% /MAXAGE:1 /NFL /NDL /NJH /NJS /nc /ns /np >nul
 )
 if not exist "*.pdf" (
 echo.
@@ -190,39 +201,44 @@ echo.
 pause
 exit
 )
+echo Complete.
 
 md "OutputFolder" 2>nul
 echo.
-echo Initializing file processing . . . 
+echo Identifying and renaming reports . . . 
 rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
-set /a totFile=%totFile%-%illChar%
-echo Initial renaming and moving sequence complete.
-echo.
+echo Complete.
 
 rem Cleanup subroutine
 echo.
+echo Further refining report names . . .
 call :cleanUp
-echo File Name clean-up complete.
-echo.
+echo Complete.
 
 rem Subroutine for the creation of Audit Pack
 echo.
+echo Creating Audit Pack . . .
 call :auditPack
+echo Complete.
 
 rem Copying of created Audit Pack to destination folder on shared drive
+echo.
+echo Copying Audit Pack to Cloud Drive . . .
 if "%debug%" == "1" (
-	robocopy "%cd%\OutputFolder\AuditPack\ " "%cd%\debug\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
+	robocopy "%cd%\OutputFolder\AuditPack\ " "%cd%\debug\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 ) else (
-	robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% "
+	robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 )
+echo Complete.
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
-cls
+echo.
+echo Generating WarpSpeed Report . . .
 call :makeReport
-start notepad "WS_Report.txt"
+
 pause
-goto :EOF
+exit
 
 :renamePDF
 set "filePDF=%~1"
@@ -249,9 +265,8 @@ rem Move the PDF file to OutputFolder and rename the file while moving it.
 rem Also checks to make sure no files are overwritten
 :while
 if not exist "OutputFolder\%fileName%.pdf" (
-move "%filePDF%" "OutputFolder\%fileName%.pdf"
+move "%filePDF%" "OutputFolder\%fileName%.pdf" >nul 2>nul
 set /a count=1
-set /a totFile=%totFile%+1
 ) else (
 set "fileName=%report%_%dat% (%count%)"
 set /a count=%count%+1
@@ -262,14 +277,11 @@ rem AR reports have the illegal "/" character, this removes it
 rem Also checks to make sure no files are overwritten
 if errorlevel 1 set report=%report:A/R =%
 if errorlevel 1 set "fileName=AR %report%_%dat%"
-if errorlevel 1 echo Illegal Character detected and removed.
-if errorlevel 1 set /a illChar=%illChar%+1
 if errorlevel 1 (
 :whileAR
 if not exist "OutputFolder\%fileName%.pdf" (
-move "%filePDF%" "OutputFolder\%fileName%.pdf"
+move "%filePDF%" "OutputFolder\%fileName%.pdf" >nul 2>nul
 set /a count=1
-set /a totFile=%totFile%+1
 ) else (
 set "fileName=AR %report%_%dat% (%count%)"
 set /a count=%count%+1
@@ -281,7 +293,6 @@ goto :EOF
 
 rem Crudely renames duplicate files based on known contents
 :cleanUp
-echo Cleaning up file names . . .
 cd OutputFolder
 ren "---------- C_%dat%.pdf" "Open Folio System Balancing Report_%dat%.pdf"
 ren "---------- C_%dat% (1).pdf" "Open Folio System Balancing Report_%dat% (1).pdf"
@@ -333,51 +344,44 @@ ren "Special Services Report_%dat% (3).pdf" "Special Services Report (PARK)_%dat
 ren "Special Services Report_%dat% (4).pdf" "Special Services Report (Ts)_%dat%.pdf" 
 ren "Special Services Report_%dat% (5).pdf" "Special Services Report (SCRE)_%dat%.pdf" 
 ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%.pdf" 
-goto :EOF
 cd..
+goto :EOF
 
 :auditPack
-echo Creating Night Audit Pack . . .
 cd OutputFolder
 md "AuditPack" 2>nul
-copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf"
-copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf"
-copy "Accounts Receivable Validation Report_%dat%.pdf" "AuditPack/AR Validation Report_%dat%.pdf"
-copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf"
-copy "Covers Report_%dat% (Detail).pdf" "AuditPack/Covers Report_%dat%.pdf"
-copy "Daily Cash Out Report_%dat% (3).pdf" "AuditPack/Daily Cash Out Report_%dat%.pdf"
-copy "Daily Revenue Report_%dat% (3).pdf" "AuditPack/Daily Revenue Report_%dat%.pdf"
-copy "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf" "AuditPack/Detail Ticket Report_%dat%.pdf"
-copy "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf" "AuditPack/Detail Adjustments Report_%dat%.pdf"
-copy "Expected Arrival Report_%dat% (1).pdf" "AuditPack/Expected Arrival Report_%dat%.pdf"
-copy "Guest History Exception Report_%dat%.pdf" "AuditPack/Guest History Exception Report_%dat%.pdf"
-copy "Guest Ledger Summary Report_%dat% (By Room)(1).pdf" "AuditPack/Guest Ledger Summary Report_%dat%.pdf"
-copy "High Balance Report_%dat% (Exceed Or Within 150).pdf" "AuditPack/High Balance Report_%dat%.pdf"
-copy "Managers Statistics Report_%dat%.pdf" "AuditPack/Managers Statistics Report_%dat%.pdf"
-copy "Market Segment Analysis_%dat% (1).pdf" "AuditPack/Market Segment Analysis_%dat%.pdf"
-copy "No Show Report_%dat%.pdf" "AuditPack/No Show Report_%dat%.pdf"
-copy "Open Folio System Balancing Report_%dat% (1).pdf" "AuditPack/Open Folio System Balancing Report_%dat%.pdf"
-copy "Out Of Order Report_%dat%.pdf" "AuditPack/Out Of Order Report_%dat%.pdf"
-copy "Reservation Activity Report_%dat%.pdf" "AuditPack/Reservation Activity Report_%dat%.pdf"
-copy "Room Post Audit Report_%dat% (1).pdf" "AuditPack/Room Post Audit Report_%dat%.pdf"
-copy "Room Rate Change Report_%dat%.pdf" "AuditPack/Room Rate Change Report_%dat%.pdf"
-copy "Special Services Report (EFE)_%dat%.pdf" "AuditPack/Special Services Report (EFE)_%dat%.pdf"
-copy "Special Services Report (SCRE)_%dat%.pdf" "AuditPack/Special Services Report (SCRE)_%dat%.pdf"
-copy "Special Services Report (T5)_%dat% (with Comments).pdf" "AuditPack/Special Services Report (T5)_%dat%.pdf"
-copy "Special Services Report (Ts)_%dat%.pdf" "AuditPack/Special Services Report (Ts)_%dat%.pdf"
-copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf"
+copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf" >nul
+copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf" >nul
+copy "Accounts Receivable Validation Report_%dat%.pdf" "AuditPack/AR Validation Report_%dat%.pdf" >nul
+copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf" >nul
+copy "Covers Report_%dat% (Detail).pdf" "AuditPack/Covers Report_%dat%.pdf" >nul
+copy "Daily Cash Out Report_%dat% (3).pdf" "AuditPack/Daily Cash Out Report_%dat%.pdf" >nul
+copy "Daily Revenue Report_%dat% (3).pdf" "AuditPack/Daily Revenue Report_%dat%.pdf" >nul
+copy "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf" "AuditPack/Detail Ticket Report_%dat%.pdf" >nul
+copy "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf" "AuditPack/Detail Adjustments Report_%dat%.pdf" >nul
+copy "Expected Arrival Report_%dat% (1).pdf" "AuditPack/Expected Arrival Report_%dat%.pdf" >nul
+copy "Guest History Exception Report_%dat%.pdf" "AuditPack/Guest History Exception Report_%dat%.pdf" >nul
+copy "Guest Ledger Summary Report_%dat% (By Room)(1).pdf" "AuditPack/Guest Ledger Summary Report_%dat%.pdf" >nul
+copy "High Balance Report_%dat% (Exceed Or Within 150).pdf" "AuditPack/High Balance Report_%dat%.pdf" >nul
+copy "Managers Statistics Report_%dat%.pdf" "AuditPack/Managers Statistics Report_%dat%.pdf" >nul
+copy "Market Segment Analysis_%dat% (1).pdf" "AuditPack/Market Segment Analysis_%dat%.pdf" >nul
+copy "No Show Report_%dat%.pdf" "AuditPack/No Show Report_%dat%.pdf" >nul
+copy "Open Folio System Balancing Report_%dat% (1).pdf" "AuditPack/Open Folio System Balancing Report_%dat%.pdf" >nul
+copy "Out Of Order Report_%dat%.pdf" "AuditPack/Out Of Order Report_%dat%.pdf" >nul
+copy "Reservation Activity Report_%dat%.pdf" "AuditPack/Reservation Activity Report_%dat%.pdf" >nul
+copy "Room Post Audit Report_%dat% (1).pdf" "AuditPack/Room Post Audit Report_%dat%.pdf" >nul
+copy "Room Rate Change Report_%dat%.pdf" "AuditPack/Room Rate Change Report_%dat%.pdf" >nul
+copy "Special Services Report (EFE)_%dat%.pdf" "AuditPack/Special Services Report (EFE)_%dat%.pdf" >nul
+copy "Special Services Report (SCRE)_%dat%.pdf" "AuditPack/Special Services Report (SCRE)_%dat%.pdf" >nul
+copy "Special Services Report (T5)_%dat% (with Comments).pdf" "AuditPack/Special Services Report (T5)_%dat%.pdf" >nul
+copy "Special Services Report (Ts)_%dat%.pdf" "AuditPack/Special Services Report (Ts)_%dat%.pdf" >nul
+copy "VIP Report_%dat%.pdf" "AuditPack/VIP Report_%dat%.pdf" >nul
 set "auditPackLoc=%cd%\AuditPack\"
-echo Audit Pack Creation complete.
-echo.
 cd..
 
 goto :EOF
 
 :makeReport
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo.
-echo Generating WarpSpeed Report . . .
-
 rem Pulls Bank Balance Sheet Numbers from Daily Cash Out Report
 (
 tools\xpdf\pdfinfo.exe "OutputFolder\Daily Cash Out Report_%dat% (3).pdf"
@@ -531,7 +535,7 @@ echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
 echo WarpSpeed Report:
 echo ------------------------------------------- 
-echo Operation Completed on %date% at %time%
+echo Operation Completed on %date% at %time% 
 echo.
 echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
@@ -597,19 +601,23 @@ echo Restaurant Revenue: !t54Tot!
 echo.
 echo.  
 ) > WS_Report.txt
-
 echo Complete.
+
+set "endTime=%time: =0%"
+rem Get elapsed time:
+set "end=!endTime:%time:~8,1%=%%100)*100+1!"  &  set "start=!startTime:%time:~8,1%=%%100)*100+1!"
+set /A "elap=((((10!end:%time:~2,1%=%%100)*60+1!%%100)-((((10!start:%time:~2,1%=%%100)*60+1!%%100), elap-=(elap>>31)*24*60*60*100"
+rem Convert elapsed time to HH:MM:SS:CC format:
+set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=elap/60+100"
+
 echo.
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo ------------------------------------------- 
+echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds, Have a great rest of your shift^^!
+echo ------------------------------------------- 
 echo.
-echo Audit Pack Back-Up Location: %auditPackLoc%
-echo.
-echo WarpSpeed Report Location: %cd%\WS_Report.txt
-echo.
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-echo.
-echo Have a great rest of your shift^^!
-echo.
+
+start notepad "WS_Report.txt" 
+
 goto :EOF
 
 :getAuditDate
@@ -753,6 +761,8 @@ if %input% EQU 1 (
 		)
 	)
 )
+setlocal EnableDelayedExpansion
+set "startTime=%time: =0%"
 
 echo.
 echo Scanning for Packages . . .                                   
@@ -767,7 +777,6 @@ echo WarpDrive Report Location: %cd%\WD_Report.txt
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ) > WD_Report.txt
-setlocal EnableDelayedExpansion
 tools\xpdf\pdftotext.exe -raw -nopgbrk "%wdRep%.pdf"
 FINDSTR /M /C:"%wdKey%" "tools\packages\*.txt" > temp.txt
 for /F "delims=" %%A in (temp.txt) do (
@@ -788,33 +797,30 @@ for /F "delims=" %%A in (temp.txt) do (
 		echo !packRoom!>>WD_Report.txt)
 	)
 )
-setlocal DisableDelayedExpansion
+set "endTime=%time: =0%"
+rem Get elapsed time:
+set "end=!endTime:%time:~8,1%=%%100)*100+1!"  &  set "start=!startTime:%time:~8,1%=%%100)*100+1!"
+set /A "elap=((((10!end:%time:~2,1%=%%100)*60+1!%%100)-((((10!start:%time:~2,1%=%%100)*60+1!%%100), elap-=(elap>>31)*24*60*60*100"
+rem Convert elapsed time to HH:MM:SS:CC format:
+set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=elap/60+100"
+
 del %wdRep%.txt
 del temp.txt
 del temp2.txt
 start notepad "WD_Report.txt"
 echo Complete.
 echo.
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo ------------------------------------------- 
+echo.
+echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
 echo WarpDrive Report Location: %cd%\WD_Report.txt
 echo.
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+echo ------------------------------------------- 
 echo.
 echo Have a great rest of your shift^!
 echo.
+setlocal DisableDelayedExpansion
 goto :EOF
-
-:updateWS
-cls
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo Downloading WarpSpeed v%webVer% . . .
-cd..
-powershell -Command "Invoke-WebRequest https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -OutFile WarpSpeed.zip"
-cls
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
-echo Extracting and Installing WarpSpeed v%webVer% . . . (WarpSpeed will quit when finished)
-powershell Expand-Archive -Force WarpSpeed.zip
-del WarpSpeed.zip
 
 exit
