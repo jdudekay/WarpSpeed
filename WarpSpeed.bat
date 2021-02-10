@@ -201,39 +201,29 @@ echo.
 pause
 exit
 )
-echo Complete.
 
 md "OutputFolder" 2>nul
-echo.
 echo Identifying and renaming reports . . . 
 rem Main program loop
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
-echo Complete.
 
 rem Cleanup subroutine
-echo.
 echo Further refining report names . . .
 call :cleanUp
-echo Complete.
 
 rem Subroutine for the creation of Audit Pack
-echo.
 echo Creating Audit Pack . . .
 call :auditPack
-echo Complete.
 
 rem Copying of created Audit Pack to destination folder on shared drive
-echo.
 echo Copying Audit Pack to Cloud Drive . . .
 if "%debug%" == "1" (
 	robocopy "%cd%\OutputFolder\AuditPack\ " "%cd%\debug\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 ) else (
 	robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 )
-echo Complete.
 
 rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
-echo.
 echo Generating WarpSpeed Report . . .
 call :makeReport
 
@@ -612,8 +602,16 @@ set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=e
 
 echo.
 echo ------------------------------------------- 
-echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds, Have a great rest of your shift^^!
+echo.
+echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
+echo.
+echo Audit Pack Back-Up Location: %auditPackLoc%
+echo.
+echo WarpSpeed Report Location: %cd%\WS_Report.txt
+echo.
 echo ------------------------------------------- 
+echo.
+echo Have a great rest of your shift^^!
 echo.
 
 start notepad "WS_Report.txt" 
@@ -818,7 +816,7 @@ echo WarpDrive Report Location: %cd%\WD_Report.txt
 echo.
 echo ------------------------------------------- 
 echo.
-echo Have a great rest of your shift^!
+echo Have a great rest of your shift^^!
 echo.
 setlocal DisableDelayedExpansion
 goto :EOF
