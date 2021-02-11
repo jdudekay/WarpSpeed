@@ -728,7 +728,7 @@ goto :EOF
 
 :warpDrive
 rem WarpDrive Package Detector
-set wdVer=1.2
+set wdVer=1.3
 cls
 echo WarpDrive: Room Package Detector by John Dudek
 echo ##############################################
@@ -786,6 +786,8 @@ for /F "delims=" %%A in (temp.txt) do (
 	if !errorlevel! EQU 0 echo ===============================>>WD_Report.txt
 	for /F "delims=" %%C in (temp2.txt) do (
 		set packRoom=%%C
+		set packRoom=!packRoom:^&=!
+		set packRoom=!packRoom: =!
 		set packRoom=!packRoom:~0,4!
 		set packRoom=!packRoom: =!
 		set /a roomCheck=packRoom/1
