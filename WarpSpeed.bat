@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=2.3.0
+set ver=2.4.0
 call :warpSpeed
 :updateWS
 cls
@@ -117,21 +117,29 @@ call :updateWS
 exit
 )
 
-if exist "rmrtver.pdf" (
+if exist "rmrtver.csv" (
 	echo Room Rate Verification Report detected: Engaging WarpDrive
 	echo.
 	pause
-	set wdRep="rmrtver"
+	set wdRep=rmrtver
 	call :warpDrive
 	pause
 	exit
 )
-
-if exist "exparvl.pdf" (
+if exist "exparvls.csv" (
 	echo Expected Arrivals Report detected: Engaging WarpDrive
 	echo.
 	pause
-	set wdRep="exparvl"
+	set wdRep=exparvls
+	call :warpDrive
+	pause
+	exit
+)
+if exist "actarvls.csv" (
+	echo Actual Arrivals Report detected: Engaging WarpDrive
+	echo.
+	pause
+	set wdRep=actarvls
 	call :warpDrive
 	pause
 	exit
@@ -173,11 +181,11 @@ if "%input%" NEQ "y" (
   goto :restart
 )
 
-del OutputFolder\ /q 2>nul
+rmdir /s /q OutputFolder 2>nul
 
 if exist "*.pdf" (
 echo.
-echo FATAL ERROR: .pdf files already in WarpSpeed Folder, process aborted.
+echo FATAL ERROR: .pdf files in WarpSpeed Folder, process aborted.
 echo.
 pause
 exit
@@ -205,6 +213,7 @@ exit
 md "OutputFolder" 2>nul
 echo Identifying and renaming reports . . . 
 rem Main program loop
+set /a ARNUM=1
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 
 rem Cleanup subroutine
@@ -266,12 +275,15 @@ goto :while
 rem AR reports have the illegal "/" character, this removes it
 rem Also checks to make sure no files are overwritten
 if errorlevel 1 set report=%report:A/R =%
+if errorlevel 1 (if %ARNUM% EQU 2 set report=%report:~0,5%)
+if errorlevel 1 (if %ARNUM% EQU 3 set report=%report:~0,5%)
 if errorlevel 1 set "fileName=AR %report%_%dat%"
 if errorlevel 1 (
 :whileAR
 if not exist "OutputFolder\%fileName%.pdf" (
 move "%filePDF%" "OutputFolder\%fileName%.pdf" >nul 2>nul
 set /a count=1
+set /a ARNUM=%ARNUM%+1
 ) else (
 set "fileName=AR %report%_%dat% (%count%)"
 set /a count=%count%+1
@@ -341,7 +353,10 @@ goto :EOF
 cd OutputFolder
 md "AuditPack" 2>nul
 copy "Advance Deposit Balance Sheet_%dat% (1).pdf" "AuditPack/Advance Deposit Balance Sheet_%dat%.pdf" >nul
+copy "AR Aging_%dat% (1).pdf" "AuditPack/AR Aging_%dat%.pdf" >nul
+copy "AR Bank Transaction Report_%dat%.pdf" "AuditPack/AR Bank Transaction Report_%dat%.pdf" >nul
 copy "AR Summary Report_%dat% (1).pdf" "AuditPack/AR Summary Report_%dat%.pdf" >nul
+copy "Accounts Receivable Activity Report_%dat%.pdf" "AuditPack/AR Activity Report_%dat%.pdf" >nul
 copy "Accounts Receivable Validation Report_%dat%.pdf" "AuditPack/AR Validation Report_%dat%.pdf" >nul
 copy "Complimentary Rooms Report_%dat% (All).pdf" "AuditPack/Complimentary Rooms Report_%dat%.pdf" >nul
 copy "Covers Report_%dat% (Detail).pdf" "AuditPack/Covers Report_%dat%.pdf" >nul
@@ -349,6 +364,7 @@ copy "Daily Cash Out Report_%dat% (3).pdf" "AuditPack/Daily Cash Out Report_%dat
 copy "Daily Revenue Report_%dat% (3).pdf" "AuditPack/Daily Revenue Report_%dat%.pdf" >nul
 copy "Detail Ticket Report_%dat% (Dep_All Sub_All)(3).pdf" "AuditPack/Detail Ticket Report_%dat%.pdf" >nul
 copy "Detail Ticket Report_%dat% (Dep_1to87 Sub_51to99).pdf" "AuditPack/Detail Adjustments Report_%dat%.pdf" >nul
+copy "Deposit Master List (Summary)_%dat%.pdf" "Deposit Master List (Summary)_%dat%.pdf" >nul
 copy "Expected Arrival Report_%dat% (1).pdf" "AuditPack/Expected Arrival Report_%dat%.pdf" >nul
 copy "Guest History Exception Report_%dat%.pdf" "AuditPack/Guest History Exception Report_%dat%.pdf" >nul
 copy "Guest Ledger Summary Report_%dat% (By Room)(1).pdf" "AuditPack/Guest Ledger Summary Report_%dat%.pdf" >nul
@@ -435,12 +451,29 @@ sort /R "temp2.txt" /O "temp.txt"
 del temp2.txt
 for /F "tokens=1-3 delims= " %%A in ('find "Available Rooms " "temp.txt"') do set "avlRooms=%%C"
 for /F "tokens=1-4 delims= " %%A in ('find "Rooms Occupied (Paid) " "temp.txt"') do set "occRooms=%%D"
-rem set /a occPer=100*(!occRooms! / !avlRooms!)
+set decimals=2
+set /A one=1, decimalsP1=decimals+1
+for /L %%i in (1,1,%decimals%) do set "one=!one!00"
+set numA=!occRooms!.00
+set numB=!avlRooms!.00
+set "fpA=%numA:.=%"
+set "fpB=%numB:.=%"
+set /A div=fpA*one/fpB
+set occPer=!div:~0,-%decimals%!.!div:~-%decimals%!
 for /F "tokens=1-3 delims= " %%A in ('find "Rev Par " "temp.txt"') do set "revPar=%%C"
 for /F "tokens=1-3 delims= " %%A in ('find "Room Revenue " "temp.txt"') do set "roomRev=%%C"
 for /F "tokens=1-3 delims= " %%A in ('find "All Revenue " "temp.txt"') do set "totRev=%%C"
 for /F "tokens=1-2 delims= " %%A in ('find "Arrivals " "temp.txt"') do set "arrivals=%%B"
-for /F "tokens=1-2 delims= " %%A in ('find "Departures " "temp.txt"') do set "departures=%%B
+for /F "tokens=1-2 delims= " %%A in ('find "Departures " "temp.txt"') do set "departures=%%B"
+set decimals=2
+set /A one=1, decimalsP1=decimals+1
+for /L %%i in (1,1,%decimals%) do set "one=!one!0"
+set numA=!roomRev!
+set numB=!occRooms!.00
+set "fpA=%numA:.=%"
+set "fpB=%numB:.=%"
+set /A div=fpA*one/fpB
+set ADR=!div:~0,-%decimals%!.!div:~-%decimals%!
 
 rem Retrieve IRD Food Total
 tools\xpdf\pdftotext.exe -raw -l 1 "OutputFolder/Daily Revenue Report_%dat% (3).pdf"
@@ -520,77 +553,59 @@ set t54Tot=%t54Tot:~0,-2%.%t54Tot:~-2%
 del temp.txt
 del temp2.txt
 del temp3.txt
+
+rem Consolidate all Night Audit Reports into one folder for tidiness of Warpspeed directory
+md "OutputFolder/AllReports" 2>nul
+move "OutputFolder\*.pdf" "OutputFolder\AllReports\" >nul
+
 (
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
 echo WarpSpeed Report:
 echo ------------------------------------------- 
+echo Night Audit Date: %nameMonth% %auditDay%, %year%
+echo.
 echo Operation Completed on %date% at %time% 
 echo.
 echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
-echo WarpSpeed Report Location: %cd%\WS_Report.txt
+echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
+echo.
+echo Bank Balance Sheet Data: %cd%\OutputFolder\bbsData.csv
+echo.
+echo Ops Report Data: %cd%\OutputFolder\OpsData.csv
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-echo.
-echo Bank Balance Sheet Information:
-echo =============================== 
-echo Daily Cash Out Settlement Totals -
-echo -------------------------------------------
-echo American Express: %dcoAxSetl%
-echo.
-echo Visa: %dcoViSetl%
-echo.
-echo MasterCard: %dcoMcSetl%
-echo.
-echo Discover: %dcoDiSetl%
-echo.
-echo.
-echo Daily Revenue Report Deposit Totals -
-echo -------------------------------------------
-echo American Express: %drrAxDep%
-echo.
-echo Visa: %drrViDep%
-echo.
-echo MasterCard: %drrMcDep%
-echo.
-echo Discover: %drrDiDep%
-echo.
-echo.
-echo Bank Transaction Report Settlement Totals -
-echo -------------------------------------------
-echo American Express: %btrAxSetl%
-echo.
-echo Visa: %btrViSetl%
-echo.
-echo MasterCard: %btrMcSetl%
-echo.
-echo Discover: %btrDiSetl%
-echo.
-echo.
-echo.
-echo Ops Report Statistics:
-echo ===============================
-echo Occupied Rooms: !occRooms!
-echo Occupancy: !occRooms! / !avlRooms!    //Not Retrievable by WarpSpeed
-echo RevPAR: !revPar!
-echo Room Rev: !roomRev!
-echo Total Rev: !totRev!
-echo Arrivals: !arrivals!
-echo Departures: !departures!
-echo.
-echo. 
 echo.
 echo Hotel Effectiveness Night Audit Entry:
 echo ===============================
 echo Occupied Rooms: !occRooms!
 echo Room Revenue: !roomRev!
 echo Departures: !departures!
-echo In Room Dining: !irdTot! 
 echo Restaurant Revenue: !t54Tot!
+echo In Room Dining: !irdTot! 
 echo.
 echo.  
-) > WS_Report.txt
+) > OutputFolder\WS_Report.txt
+(
+echo AuditDate,%dat%
+echo ,AX,VI,MC,DI
+echo DailyCashOut,%dcoAxSetl%,%dcoViSetl%,%dcoMcSetl%,%dcoDiSetl%
+echo DailyRevReport,%drrAxDep%,%drrViDep%,%drrMcDep%,%drrDiDep%
+echo BankTransReport,%btrAxSetl%,%btrViSetl%,%btrMcSetl%,%btrDiSetl%
+) > OutputFolder\bbsData.csv
+(
+echo AuditDate,%dat%
+echo TotalRooms,!avlRooms!
+echo OccRooms,!occRooms!
+echo OccPer,!occPer!
+echo ADR,!ADR!
+echo RevPAR,!revPar!
+echo RoomRev,!roomRev!
+echo TotalRev,!totRev!
+echo Arrivals,!arrivals!
+echo Departures,!departures!
+) > OutputFolder\opsData.csv
 echo Complete.
 
 set "endTime=%time: =0%"
@@ -607,14 +622,16 @@ echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
 echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
-echo WarpSpeed Report Location: %cd%\WS_Report.txt
+echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
 echo.
 echo ------------------------------------------- 
 echo.
 echo Have a great rest of your shift^^!
 echo.
 
-start notepad "WS_Report.txt" 
+start notepad "OutputFolder\WS_Report.txt" 
+start excel "OutputFolder\bbsData.csv" 
+start excel "OutputFolder\OpsData.csv" 
 
 goto :EOF
 
@@ -728,7 +745,7 @@ goto :EOF
 
 :warpDrive
 rem WarpDrive Package Detector
-set wdVer=1.3
+set wdVer=1.4
 cls
 echo WarpDrive: Room Package Detector by John Dudek
 echo ##############################################
@@ -762,8 +779,48 @@ if %input% EQU 1 (
 setlocal EnableDelayedExpansion
 set "startTime=%time: =0%"
 
+rem Processing of .cvs Expected Arrivals Report. WarpDrive creates a more easibly parseable .txt file from the data contained with the .csv file
+rem Rat's nest of nested if statements currently will detect and protect against no room being assigned, the guest being part of a group block, 
+rem    the guest having an extended block, and the guest having either an obscene amount of service codes or being a certificate award, sample set 
+rem    is too small to determine what exactly is being fixed on the last one
 echo.
-echo Scanning for Packages . . .                                   
+echo Scanning for Packages . . .
+
+if "%wdRep%" EQU "exparvls" (
+for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
+	set noRoom=0
+	set awrdRoom=0
+	if "%%a" == "@" set awrdName="%%d,%%e"
+	if 1%%f EQU +1%%f set awrdRoom=1
+	if "%%a" == "KG" set noRoom=1
+	if "%%a" == "QN" set noRoom=1
+	if "%%a" == "EK" set noRoom=1
+	if "%%a" == "EQ" set noRoom=1
+	if "%%a" == "KS" set noRoom=1
+	if "%%a" == "VP" set noRoom=1
+	if "%%a" == "PR" set noRoom=1
+	if "%%a" == "&" (
+		if 1%%a EQU +1%%a (if "%%f" == "G" (echo %%b %%g,%%h %%k) else (echo %%b %%g,%%h %%j))
+		) else (			
+			if "%%f" == "G" (
+				if "!noRoom!" == "1" (echo No Room Assigned %%e,%%f %%i) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (echo %%a %%f,%%g %%j)))
+				) else (
+					if "!noRoom!" == "1" (echo No Room Assigned %%e,%%f %%h) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (
+						if "!awrdRoom!" == "1" (echo %%a !awrdName! %%c) else (echo %%a %%f,%%g %%i)
+					)))
+				)
+		)
+	) >> temp.txt
+)
+if "%wdRep%" EQU "actarvls" (
+for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
+	if 1%%a EQU +1%%a set "roomInfo=%%a %%e,%%f"
+	if "%%a" EQU "Rate Schedule/Rate:" (if "%%b" NEQ "/ $0.00" (
+		set rateCode=%%b
+		echo !roomInfo! !rateCode:~0,7!
+		))
+	) >> temp.txt
+)
 (
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
 echo.
@@ -774,27 +831,16 @@ echo.
 echo WarpDrive Report Location: %cd%\WD_Report.txt
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-) > WD_Report.txt
-tools\xpdf\pdftotext.exe -raw -nopgbrk "%wdRep%.pdf"
-FINDSTR /M /C:"%wdKey%" "tools\packages\*.txt" > temp.txt
-for /F "delims=" %%A in (temp.txt) do (
+) > OutputFolder\WD_Report.txt
+FINDSTR /M /C:"%wdKey%" "tools\packages\*.txt" > temp2.txt
+for /F "delims=" %%A in (temp2.txt) do (
 	set packDesc=0
 	for /F "skip=1 delims=" %%B IN (%%A) DO if !packDesc! EQU 0 set "packDesc=%%B"
-	FINDSTR /i /L /g:"%%A" "%wdRep%.txt" > temp2.txt
-	if !errorlevel! EQU 0 echo.>>WD_Report.txt
-	if !errorlevel! EQU 0 echo !packDesc!>>WD_Report.txt
-	if !errorlevel! EQU 0 echo ===============================>>WD_Report.txt
-	for /F "delims=" %%C in (temp2.txt) do (
-		set packRoom=%%C
-		set packRoom=!packRoom:^&=!
-		set packRoom=!packRoom: =!
-		set packRoom=!packRoom:~0,4!
-		set packRoom=!packRoom: =!
-		set /a roomCheck=packRoom/1
-		if "!roomCheck!" NEQ "!packRoom!" (
-		echo Package with No Assigned Room>>WD_Report.txt
-		) else (
-		echo !packRoom!>>WD_Report.txt)
+	FINDSTR /i /L /g:"%%A" "temp.txt" > temp3.txt
+	if !errorlevel! EQU 0 echo.>>OutputFolder\WD_Report.txt
+	if !errorlevel! EQU 0 echo !packDesc!>>OutputFolder\WD_Report.txt
+	if !errorlevel! EQU 0 echo ===============================>>OutputFolder\WD_Report.txt
+	for /F "delims=" %%C in (temp3.txt) do echo %%C>>OutputFolder\WD_Report.txt
 	)
 )
 set "endTime=%time: =0%"
@@ -804,17 +850,17 @@ set /A "elap=((((10!end:%time:~2,1%=%%100)*60+1!%%100)-((((10!start:%time:~2,1%=
 rem Convert elapsed time to HH:MM:SS:CC format:
 set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=elap/60+100"
 
-del %wdRep%.txt
 del temp.txt
 del temp2.txt
-start notepad "WD_Report.txt"
+del temp3.txt
+start notepad "OutputFolder\WD_Report.txt"
 echo Complete.
 echo.
 echo ------------------------------------------- 
 echo.
 echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
-echo WarpDrive Report Location: %cd%\WD_Report.txt
+echo WarpDrive Report Location: %cd%\OutputFolder\WD_Report.txt
 echo.
 echo ------------------------------------------- 
 echo.
