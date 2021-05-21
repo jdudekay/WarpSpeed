@@ -17,7 +17,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=2.4.0
+set ver=2.4.1
 call :warpSpeed
 :updateWS
 cls
@@ -182,6 +182,7 @@ if "%input%" NEQ "y" (
 )
 
 rmdir /s /q OutputFolder 2>nul
+md "OutputFolder" 2>nul
 
 if exist "*.pdf" (
 echo.
@@ -198,22 +199,20 @@ rem Copying of all .pdfs from p2 folder to WarpSpeed folder
 echo.
 echo Copying reports from eci folder . . .
 if "%debug%" == "1" (
-	robocopy "%cd%\debug\ " %cd% /NFL /NDL /NJH /NJS /nc /ns /np >nul
+	robocopy "%cd%\debug\ " "%cd%\OutputFolder " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 ) else (
-	robocopy Z:\eci %cd% /MAXAGE:1 /NFL /NDL /NJH /NJS /nc /ns /np >nul
-)
-if not exist "*.pdf" (
-echo.
-echo FATAL ERROR: .pdf files unable to be copied, process aborted.
-echo.
-pause
-exit
+	set month=%date:~4,2%
+	set day=%date:~7,2%
+	set year=%date:~10,4%
+	set currDat=!year!!month!!day!
+	copy Z:\eci\!currDat!* "%cd%\OutputFolder " >nul
 )
 
-md "OutputFolder" 2>nul
+
 echo Identifying and renaming reports . . . 
 rem Main program loop
 set /a ARNUM=1
+cd OutputFolder
 for /F %%I in ('dir *.pdf /B') do call :RenamePDF "%%~fI"
 
 rem Cleanup subroutine
@@ -222,6 +221,7 @@ call :cleanUp
 
 rem Subroutine for the creation of Audit Pack
 echo Creating Audit Pack . . .
+
 call :auditPack
 
 rem Copying of created Audit Pack to destination folder on shared drive
@@ -245,10 +245,9 @@ set "fileTXT=%~dpn1.txt"
 
 rem Create text version of .pdf to be read
 rem Parameters are set to print only the first page and in raw which condenses the data
-tools\xpdf\pdftotext.exe -l 1 -raw "%filePDF%"
+..\tools\xpdf\pdftotext.exe -l 1 -raw "%filePDF%"
 
 rem For loop is used to call find which selects the line that contains the report name
-rem Names
 for /F "tokens=1 delims=:" %%A in ('%SystemRoot%\System32\find.exe "Westin Medical Ctr" "%fileTXT%"') do set "report=%%A"
 
 rem The text version of the PDF file is no longer needed.
@@ -263,8 +262,8 @@ set "fileName=%report%_%dat%"
 rem Move the PDF file to OutputFolder and rename the file while moving it.
 rem Also checks to make sure no files are overwritten
 :while
-if not exist "OutputFolder\%fileName%.pdf" (
-move "%filePDF%" "OutputFolder\%fileName%.pdf" >nul 2>nul
+if not exist "%fileName%.pdf" (
+rename "%filePDF%" "%fileName%.pdf" >nul 2>nul
 set /a count=1
 ) else (
 set "fileName=%report%_%dat% (%count%)"
@@ -280,8 +279,8 @@ if errorlevel 1 (if %ARNUM% EQU 3 set report=%report:~0,5%)
 if errorlevel 1 set "fileName=AR %report%_%dat%"
 if errorlevel 1 (
 :whileAR
-if not exist "OutputFolder\%fileName%.pdf" (
-move "%filePDF%" "OutputFolder\%fileName%.pdf" >nul 2>nul
+if not exist "%fileName%.pdf" (
+rename "%filePDF%" "%fileName%.pdf" >nul 2>nul
 set /a count=1
 set /a ARNUM=%ARNUM%+1
 ) else (
@@ -295,7 +294,6 @@ goto :EOF
 
 rem Crudely renames duplicate files based on known contents
 :cleanUp
-cd OutputFolder
 ren "---------- C_%dat%.pdf" "Open Folio System Balancing Report_%dat%.pdf"
 ren "---------- C_%dat% (1).pdf" "Open Folio System Balancing Report_%dat% (1).pdf"
 ren "---------- C_%dat% (2).pdf" "Payment Register Detail Report_%dat%.pdf"
@@ -786,6 +784,7 @@ rem    is too small to determine what exactly is being fixed on the last one
 echo.
 echo Scanning for Packages . . .
 
+md "OutputFolder" 2>nul
 if "%wdRep%" EQU "exparvls" (
 for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 	set noRoom=0
