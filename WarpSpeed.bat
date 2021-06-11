@@ -1,6 +1,6 @@
 @echo off
-rem    WarpSpeed: PMS Supplementation Suite - A tool made with the intention 
-rem    of streamlining a multitude of different daily necessary processes 
+rem    WarpSpeed: PMS Supplementation Suite - A tool made with the intention
+rem    of streamlining a multitude of different daily necessary processes
 rem    related to the generation and analyzation of PMS reports.
 rem
 rem    Copyright (C) 2020-2021 John Dudek
@@ -115,7 +115,7 @@ echo                                       ║        1. Night Audit Accelerator
 echo                                       ║        2. Room Package Detector          ║
 echo                                       ║        3. Help                           ║
 echo                                       ║        4. Quit                           ║
-echo                                       ╚══════════════════════════════════════════╝ 
+echo                                       ╚══════════════════════════════════════════╝
 goto :EOF
 
 :menu
@@ -154,9 +154,9 @@ if "%input%" EQU "3" (
 	echo                                       ║        1. Open ReadMe                    ║
 	echo                                       ║        2. Update WarpSpeed               ║
 	echo                                       ║        3. Return to Main Menu            ║
-	echo                                       ╚══════════════════════════════════════════╝ 
+	echo                                       ╚══════════════════════════════════════════╝
 	goto :EOF
-	
+
 	:helpMenu
 	call :drawHelpMenu
 	echo.
@@ -176,7 +176,7 @@ if "%input%" EQU "4" (
 	set /p input="Are you sure you want to quit? (y/n): "
 	if "!input!" EQU "y" (exit) else (goto :menu)
 	)
-	
+
 goto :menu
 exit
 
@@ -192,8 +192,8 @@ echo Type "help" for instructions
 echo.
 
 if not exist "tools\xpdf\pdftotext.exe" (
-echo FATAL ERROR: pdftotext.exe is missing. 
-echo WarpSpeed cannot run. 
+echo FATAL ERROR: pdftotext.exe is missing.
+echo WarpSpeed cannot run.
 echo WarpSpeed will attempt to update and repair itself automatically.
 echo.
 pause
@@ -201,8 +201,8 @@ call :updateWS
 exit
 )
 if not exist "tools\xpdf\pdfinfo.exe" (
-echo FATAL ERROR: pdfinfo.exe is missing. 
-echo WarpSpeed cannot run. 
+echo FATAL ERROR: pdfinfo.exe is missing.
+echo WarpSpeed cannot run.
 echo WarpSpeed will attempt to update and repair itself automatically.
 echo.
 pause
@@ -229,7 +229,7 @@ if "%input%" == "debug" (
 )
 rem Help function
 if "%input%" == "help" (
-start notepad "README.md" 
+start notepad "README.md"
 goto :nightAuditAccel
 )
 rem Update function
@@ -274,7 +274,7 @@ if "%debug%" == "1" (
 )
 
 
-echo Identifying and renaming reports . . . 
+echo Identifying and renaming reports . . .
 rem Main program loop
 set /a ARNUM=1
 cd OutputFolder
@@ -311,7 +311,7 @@ rem Convert elapsed time to HH:MM:SS:CC format:
 set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=elap/60+100"
 
 echo.
-echo ------------------------------------------- 
+echo -------------------------------------------
 echo.
 echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
@@ -319,14 +319,14 @@ echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
 echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
 echo.
-echo ------------------------------------------- 
+echo -------------------------------------------
 echo.
 echo Have a great rest of your shift^^!
 echo.
 
-start notepad "OutputFolder\WS_Report.txt" 
-start excel "OutputFolder\bbsData.csv" 
-start excel "OutputFolder\OpsData.csv" 
+start notepad "OutputFolder\WS_Report.txt"
+start excel "OutputFolder\bbsData.csv"
+start excel "OutputFolder\OpsData.csv"
 
 pause
 goto :menu
@@ -428,14 +428,14 @@ ren "High Balance Report_%dat% (1).pdf" "High Balance Report_%dat% (All).pdf"
 ren "In House Guest Report_%dat%.pdf" "In House Guest Report_%dat% (All Inhouse).pdf"
 ren "In House Guest Report_%dat% (1).pdf" "In House Guest Report_%dat% (Reg Only).pdf"
 ren "Managers Statistics Report_%dat% (1).pdf" "Managers Statistics Report_%dat% (Summary).pdf"
-ren "Room Rate Change Report_%dat% (1).pdf" "Room Rate Change Report_%dat% (Inhouse Only).pdf" 
-ren "Special Services Report_%dat%.pdf" "Special Services Report (T5)_%dat% (with Comments).pdf" 
-ren "Special Services Report_%dat% (1).pdf" "Special Services Report (T5)_%dat%.pdf" 
-ren "Special Services Report_%dat% (2).pdf" "Special Services Report (J8)_%dat%.pdf" 
-ren "Special Services Report_%dat% (3).pdf" "Special Services Report (PARK)_%dat%.pdf" 
-ren "Special Services Report_%dat% (4).pdf" "Special Services Report (Ts)_%dat%.pdf" 
-ren "Special Services Report_%dat% (5).pdf" "Special Services Report (SCRE)_%dat%.pdf" 
-ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%.pdf" 
+ren "Room Rate Change Report_%dat% (1).pdf" "Room Rate Change Report_%dat% (Inhouse Only).pdf"
+ren "Special Services Report_%dat%.pdf" "Special Services Report (T5)_%dat% (with Comments).pdf"
+ren "Special Services Report_%dat% (1).pdf" "Special Services Report (T5)_%dat%.pdf"
+ren "Special Services Report_%dat% (2).pdf" "Special Services Report (J8)_%dat%.pdf"
+ren "Special Services Report_%dat% (3).pdf" "Special Services Report (PARK)_%dat%.pdf"
+ren "Special Services Report_%dat% (4).pdf" "Special Services Report (Ts)_%dat%.pdf"
+ren "Special Services Report_%dat% (5).pdf" "Special Services Report (SCRE)_%dat%.pdf"
+ren "Special Services Report_%dat% (6).pdf" "Special Services Report (EFE)_%dat%.pdf"
 cd..
 goto :EOF
 
@@ -531,7 +531,7 @@ setlocal enableextensions enabledelayedexpansion
 copy NUL temp2.txt > NUL
 set /A maxlines=26
 set /A linecount=0
-for /F "delims=" %%A in (temp.txt) do ( 
+for /F "delims=" %%A in (temp.txt) do (
   if !linecount! GEQ %maxlines% goto ExitLoop
   echo %%A >> temp2.txt
   set /A linecount+=1
@@ -602,18 +602,18 @@ set /A line31=31
 set /A line32=32
 set /A line33=33
 set /A line34=34
-for /F "delims=" %%A in (temp.txt) do ( 
+for /F "delims=" %%A in (temp.txt) do (
   if !linecount! GEQ %maxlines% goto ExitLoop
-  if !linecount! EQU %line19% echo %%A >> temp2.txt 
-  if !linecount! EQU %line20% echo %%A >> temp2.txt 
-  if !linecount! EQU %line21% echo %%A >> temp2.txt 
-  if !linecount! EQU %line22% echo %%A >> temp2.txt 
-  if !linecount! EQU %line23% echo %%A >> temp2.txt 
-  if !linecount! EQU %line24% echo %%A >> temp2.txt 
-  if !linecount! EQU %line31% echo %%A >> temp3.txt 
-  if !linecount! EQU %line32% echo %%A >> temp3.txt 
-  if !linecount! EQU %line33% echo %%A >> temp3.txt 
-  if !linecount! EQU %line34% echo %%A >> temp3.txt 
+  if !linecount! EQU %line19% echo %%A >> temp2.txt
+  if !linecount! EQU %line20% echo %%A >> temp2.txt
+  if !linecount! EQU %line21% echo %%A >> temp2.txt
+  if !linecount! EQU %line22% echo %%A >> temp2.txt
+  if !linecount! EQU %line23% echo %%A >> temp2.txt
+  if !linecount! EQU %line24% echo %%A >> temp2.txt
+  if !linecount! EQU %line31% echo %%A >> temp3.txt
+  if !linecount! EQU %line32% echo %%A >> temp3.txt
+  if !linecount! EQU %line33% echo %%A >> temp3.txt
+  if !linecount! EQU %line34% echo %%A >> temp3.txt
   set /A linecount+=1
 )
 :ExitLoop
@@ -652,10 +652,10 @@ move "OutputFolder\*.pdf" "OutputFolder\AllReports\" >nul
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
 echo WarpSpeed Report:
-echo ------------------------------------------- 
+echo -------------------------------------------
 echo Night Audit Date: %nameMonth% %auditDay%, %year%
 echo.
-echo Operation Completed on %date% at %time% 
+echo Operation Completed on %date% at %time%
 echo.
 echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
@@ -673,9 +673,9 @@ echo Occupied Rooms: !occRooms!
 echo Room Revenue: !roomRev!
 echo Departures: !departures!
 echo Restaurant Revenue: !t54Tot!
-echo In Room Dining: !irdTot! 
+echo In Room Dining: !irdTot!
 echo.
-echo.  
+echo.
 ) > OutputFolder\WS_Report.txt
 (
 echo AuditDate,%dat%
@@ -736,10 +736,10 @@ if "%day%"=="01" (
     if "%month%"=="03" (
     set nameMonth=February
 	set month=02
-	set auditDay=28		
+	set auditDay=28
 	if "%leap%"=="1" (
 		set auditDay=29
-	)	
+	)
   )
     if "%month%"=="04" (
 	set nameMonth=March
@@ -808,7 +808,7 @@ set dat=%month%-%auditDay%-%year%
 goto :EOF
 
 :getLengthOfStay
-rem Converts departure date to a format where a forumla can be performed that detects 
+rem Converts departure date to a format where a forumla can be performed that detects
 rem the length of stay for that reservation
 set month=%date:~4,2%
 set day=%date:~7,2%
@@ -858,11 +858,11 @@ if "%departMonth%" EQU "10" (set /a departAccumDays=273)
 if "%departMonth%" EQU "11" (set /a departAccumDays=304)
 if "%departMonth%" EQU "12" (set /a departAccumDays=334)
 
-set /a departNumDays = ("%departYear%" * 365) + %departAccumDays% + %departDay% 
+set /a departNumDays = ("%departYear%" * 365) + %departAccumDays% + %departDay%
 set /a departNumberOfLeaps = ("%departYear%" / 4) - ("%departYear%" / 100) + ("%departYear%" / 400)
 set /a departNumDays = !departNumDays! + !departNumberOfLeaps!
 
-set /a numDays = ("%year%" * 365) + %accumDays% + %day% 
+set /a numDays = ("%year%" * 365) + %accumDays% + %day%
 set /a numberOfLeaps = ("%year%" / 4) - ("%year%" / 100) + ("%year%" / 400)
 set /a numDays = !numDays! + !numberOfLeaps!
 
@@ -899,7 +899,7 @@ goto :menu
 )
 
 if "%input%" == "help" (
-start notepad "README.md" 
+start notepad "README.md"
 goto :WarpDrive
 )
 
@@ -925,8 +925,8 @@ setlocal EnableDelayedExpansion
 set "startTime=%time: =0%"
 
 rem Processing of .cvs Expected Arrivals Report. WarpDrive creates a more easibly parseable .txt file from the data contained with the .csv file
-rem Rat's nest of nested if statements currently will detect and protect against no room being assigned, the guest being part of a group block, 
-rem    the guest having an extended block, and the guest having either an obscene amount of service codes or being a certificate award, sample set 
+rem Rat's nest of nested if statements currently will detect and protect against no room being assigned, the guest being part of a group block,
+rem    the guest having an extended block, and the guest having either an obscene amount of service codes or being a certificate award, sample set
 rem    is too small to determine what exactly is being fixed on the last one
 echo.
 echo Scanning for Packages . . .
@@ -950,7 +950,7 @@ for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 	if "%%a" == "PR" set noRoom=1
 	if "%%a" == "&" (
 		if 1%%b EQU +1%%b (if "%%f" == "G" (set arrType=BlockGroup) else (set arrType=BlockTrans))
-		) else (			
+		) else (
 			if "%%f" == "G" (
 				if "!noRoom!" == "1" (set arrType=NoRmGroup) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (set arrType=Group)))
 				) else (
@@ -1012,7 +1012,7 @@ for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
 echo.
 echo WarpDrive Report:
-echo ------------------------------------------- 
+echo -------------------------------------------
 echo Operation Completed on %date% at %time%
 echo.
 echo WarpDrive Report Location: %cd%\WD_Report.txt
@@ -1043,13 +1043,13 @@ del temp3.txt
 start notepad "OutputFolder\WD_Report.txt"
 echo Complete.
 echo.
-echo ------------------------------------------- 
+echo -------------------------------------------
 echo.
 echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
 echo WarpDrive Report Location: %cd%\OutputFolder\WD_Report.txt
 echo.
-echo ------------------------------------------- 
+echo -------------------------------------------
 echo.
 echo Have a great rest of your shift^^!
 echo.
