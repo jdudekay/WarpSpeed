@@ -2,50 +2,25 @@
  
 **WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all ~~98~~ 99 Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report. 
 
-The scope of **WarpSpeed** has widened over time and is now also designed to analyze a list of guests, compare them against a list of packages, and produce a report of said guests via a cheekily named **WarpDrive** subroutine. (Documentation on how to use this is given in the Miscellaneous section below!)
+The scope of **WarpSpeed** has widened over time and is now also designed to analyze a list of guests, compare them against various lists of packages, and produce a report of said guests via a cheekily named **WarpDrive** subroutine.
 
-Using **WarpSpeed** is designed to be as simple as possible, and only requires a few easy steps:
+Using **WarpSpeed** is designed to be as simple as possible, with a full explanation of main menu prompts given as follows:
 
-## Step One
-### Prep **WarpSpeed** folder
-
-Make sure the **WarpSpeed** folder is empty except for the following files:
-* WarpSpeed.bat
-* README.md
-* LICENSE
-* /tools/
- 
-If there is ANYTHING other than the above listed files/folders in the **WarpSpeed** folder on the Desktop, delete them so that the folder contents match the above
-
-## Step Two
-### Run **WarpSpeed**
- 
-The next step once you’ve gotten the folder ready for processing, run **WarpSpeed**, at the Title Screen it will ask you to press any key to continue after which WarpSpeed will check for updates and then attempt to automatically assess what date you are trying to do Audit for. If this date is incorrect for any reason, type "n". Advanced users can type "manual" and will be able to manually enter the data that way.
- 
-**WarpSpeed** will run automatically through the following processes:
-- Copying of .pdfs into current folder
+## Night Audit Accelerator
+**WarpSpeed** will automatically assess what date you are trying to do Audit for. Type "y" and **WarpSpeed** will run automatically through the following processes:
+- Copying of .pdfs into OutputFolder (Folder will be created if it does not exist)
 - Analysis of .pdfs
-- Renaming and copying of .pdfs into Back-Up folder and final Audit Pack folder
-- Generation of WS_Report.txt
+- Renaming and copying of .pdfs into AuditPack and AllReports folders
+- Generation of WS_Report.txt, bbsData.csv, and opsData.csv
+- Copying of AuditPack folder into appropriate destination on Cloud Drive
 
-The Audit Pack Back-Up and WS_Report's locations will be displayed on the Operation Complete screen, and the **WarpSpeed** report itself which contains additional information for the Night Audit will be displayed before the program closes.
+The Audit Pack Back-Up and WS_Report's locations will be displayed on the Operation Complete screen, and the **WarpSpeed** report as well as the generated spreadsheets which contains additional information for the completion of Night Audit will be displayed before the program closes.
 
-## Step Three
-### Retrieve Information from the **WarpSpeed** Report
- 
-The generated report within the **WarpSpeed** folder, WS_Report.txt will currently contain the following data:
+(Advanced users can type "debug"  at the prompt to use a user-defined group of Night Audit Reports)
 
-- Bank Balance Sheet Totals
-- Ops Report Statistics
-- Hotel Effectiveness Night Audit Entry Statistics
-
-As it currently stands there are no further statistics which **WarpSpeed** can reliably extract.
-
-## Miscellaneous
-### WarpDrive
-
-If **WarpSpeed** is started with either the Room Rate Verification Report named *rmrtver.pdf* or the Expected Arrivals Report named *exparvls* within the /WarpSpeed/ directory, **WarpDrive** will engage and compare the list of guests contained within either .pdf to user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and will generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
-The user will be prompted to select either All Packages or just Valet Packages, after which WarpDrive will go through it's normal processes.
+## Room Package Detector (WarpDrive)
+By generating the Expected Arrivals report in .csv format and placing it in the /WarpSpeed/ directory, you can use this function to compare the report against user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
+The user will be prompted to select either All Packages or just Valet Packages.
 
 All Package Description files used by **WarpSpeed** will be .txt filetype and have the following format:
 
@@ -55,9 +30,9 @@ All Package Description files used by **WarpSpeed** will be .txt filetype and ha
 *99RATE*  
 *etc...*  
 
-### Updating WarpSpeed
-
-At the main prompt confirming which date you're doing Night Audit for, enter "update" (Without quotations) and the program will update itself to the latest released version and close itself.
+## Help
+This menu is pretty self-explanatory, you can either open this ReadMe, or you can run **WarpSpeed**'s Update function. 
+When updating, **WarpSpeed** will first check to see what is the most updated version and display that information along-side the current version number so the user can choose to update or not.
 
 ### Error-Checking
 
