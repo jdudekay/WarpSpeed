@@ -892,7 +892,7 @@ if "%wdRep%" == "0" (
 echo.
 echo ERROR: No usable reports found in WarpSpeed folder.
 echo.
-echo WarpSpeed: Room Package Detector will now quit.
+echo Room Package Detector will now quit.
 echo.
 pause
 goto :menu
