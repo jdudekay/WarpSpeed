@@ -240,7 +240,7 @@ exit
 
 if "%input%" NEQ "y" (
   echo.
-  echo Input not recognized, restarting Night Audit Accelerator.
+  echo Invalid Input.
   echo.
   pause
   goto :nightAuditAccel
@@ -910,6 +910,12 @@ if %input% EQU 0 (
 		goto :warpDrive
 		)
 	)
+) else (
+		echo.
+		echo Invalid Input.
+		echo.
+		pause
+		goto :warpDrive
 )
 if "%wdRep%" == "0" (
 echo.
