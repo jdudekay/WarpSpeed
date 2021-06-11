@@ -1,7 +1,7 @@
 @echo off
-rem    WarpSpeed: Night Audit Accelerator - A tool made with the intention 
-rem    of streamlining the Night Audit Process by renaming and sorting a large 
-rem    number of .pdf files and generating reports based off of their contents.
+rem    WarpSpeed: PMS Supplementation Suite - A tool made with the intention 
+rem    of streamlining a multitude of different daily necessary processes 
+rem    related to the generation and analyzation of PMS reports.
 rem
 rem    Copyright (C) 2020-2021 John Dudek
 rem
@@ -17,81 +17,174 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=2.4.1
+set ver=3.0.0
 call :warpSpeed
 :updateWS
 cls
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo WarpSpeed: PMS Supplementation Suite by John Dudek v%ver%
 echo Downloading WarpSpeed v%webVer% . . .
 cd..
 powershell -Command "Invoke-WebRequest https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -OutFile WarpSpeed.zip"
 cls
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+echo WarpSpeed: PMS Supplementation Suite by John Dudek v%ver%
 echo Extracting and Installing WarpSpeed v%webVer% . . . (WarpSpeed will restart when finished)
 powershell Expand-Archive -Force WarpSpeed.zip
 del WarpSpeed.zip
 cd WarpSpeed
 start cmd /K WarpSpeed.bat
 exit
-:warpSpeed
-cls
-echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                                                                            -+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                                                                            -+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                888       888                        .d8888b.                              888              -+-+-+
-echo -+-+-+               888   o   888                       d88P  Y88b                             888               +-+-+-
-echo +-+-+-               888  d8b  888                       Y88b.                                  888               -+-+-+
-echo -+-+-+               888 d888b 888 8888b. 888d88888888b.  "Y888b.  88888b.  .d88b.  .d88b.  .d88888               +-+-+-
-echo +-+-+-               888d88888b888    "88b888P"  888 "88b    "Y88b.888 "88bd8P  Y8bd8P  Y8bd88" 888               -+-+-+
-echo -+-+-+               88888P Y88888.d888888888    888  888      "888888  8888888888888888888888  888               +-+-+-
-echo +-+-+-               8888P   Y8888888  888888    888 d88PY88b  d88P888 d88PY8b.    Y8b.    Y88b 888               -+-+-+
-echo -+-+-+               888P     Y888"Y888888888    88888P"  "Y8888P" 88888P"  "Y8888  "Y8888  "Y88888               +-+-+-
-echo +-+-+-                                           888               888                                            -+-+-+
-echo -+-+-+                                           888               888                                            +-+-+-
-echo +-+-+-                                           888               888                                            -+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                               N i g h t   A u d i t   A c c e l e r a t o r                                -+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                                   v %ver%                                                  -+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-                                     Copyright (C) 2020-2021 John Dudek                                     -+-+-+
-echo -+-+-+                                                                                                            +-+-+-
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-echo -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-pause
-:restart
-cls
 
-setlocal EnableExtensions DisableDelayedExpansion
-set /a count=1
-
-rem Main program prompts
-echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
+:checkUpdate
+rem Checks if WarpSpeed is at the latest version
+cls
+echo WarpSpeed: PMS Supplementation Suite by John Dudek v%ver%
 echo Checking for updates . . .
 curl https://github.com/jdudekay/WarpSpeed/releases/latest/download/WarpSpeed.zip -s > temp.txt
 setlocal enabledelayedexpansion
 for /f "tokens=*" %%a in (temp.txt) do (
-  set webVer=%%a
-  set webVer=!webVer:~92,-45!
-  if "!webVer!" NEQ "%ver%" ( 
-    del temp.txt
+	set webVer=%%a
+	set webVer=!webVer:~92,-45!
+	del temp.txt
 	echo.
 	echo Current Version: %ver%
 	echo Latest Release: !webVer!
 	echo.
-	echo WarpSpeed will now update.
-	pause
-    call :updateWS 
-    )
+	set /p input="Would you like to update WarpSpeed? (y/n): "
+	if "!input!" EQU "y" (goto :updateWS)
 )
 del temp.txt
 setlocal DisableDelayedExpansion
+goto :EOF
+
+:warpSpeed
+cls
+echo.
+echo.
+echo.                                                                                                                        
+echo.                                                                                                                        
+echo.
+echo.                                                                                                                        
+echo                  888       888                             .d8888b.                                 888              
+echo                   888   o   888                           d88P  Y88b                                 888               
+echo                   888  d8b  888                           Y88b.                                      888               
+echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888               
+echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888              
+echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888              
+echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888             
+echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888            
+echo                                                  888                 888                                           
+echo                                                  888                 888                                 
+echo                                                  888                 888                                    
+echo.
+echo                                     P M S   S u p p l e m e n t a t i o n   S u i t e
+echo.
+echo                                                          v %ver%
+echo.
+echo                                            Copyright (C) 2020-2021 John Dudek
+echo.
+echo.                                                                                                                        
+echo.                                                                                                                        
+echo.
+echo.
+pause
+goto :menu
+:drawMenu
+cls
+echo.
+echo.
+echo.
+echo.                                                                                                                        
+echo.                                                                                                                        
+echo.                                                                                                                        
+echo                  888       888                             .d8888b.                                 888              
+echo                   888   o   888                           d88P  Y88b                                 888               
+echo                   888  d8b  888                           Y88b.                                      888               
+echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888               
+echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888              
+echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888              
+echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888             
+echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888            
+echo                                                  888                 888                                           
+echo                                                  888                 888                                 
+echo                                                  888                 888                                               
+echo.                                                      - Main Menu -
+echo                                       ╔══════════════════════════════════════════╗                                      
+echo                                       ║ Please select one the following options: ║                                      
+echo                                       ╠══════════════════════════════════════════╣                                      
+echo                                       ║        1. Night Audit Accelerator        ║                                      
+echo                                       ║        2. Room Package Detector          ║                                      
+echo                                       ║        3. Help                           ║                                      
+echo                                       ║        4. Quit                           ║                                      
+echo                                       ╚══════════════════════════════════════════╝ 
+goto :EOF
+
+:menu
+setlocal enabledelayedexpansion
+call :drawMenu
+echo.
+echo.
+set /p input="What is your selection? (1-4): "
+if "%input%" EQU "1" (goto :nightAuditAccel)
+if "%input%" EQU "2" (goto :warpDrive)
+if "%input%" EQU "3" (
+	goto :helpMenu
+	:drawHelpMenu
+	cls
+	echo.
+	echo.
+	echo.
+	echo.                                                                                                                        
+	echo.                                                                                                                        
+	echo.                                                                                                                        
+	echo                  888       888                             .d8888b.                                 888              
+	echo                   888   o   888                           d88P  Y88b                                 888               
+	echo                   888  d8b  888                           Y88b.                                      888               
+	echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888               
+	echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888              
+	echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888              
+	echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888             
+	echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888            
+	echo                                                  888                 888                                           
+	echo                                                  888                 888                                 
+	echo                                                  888                 888                                               
+	echo.                                                      - Help Menu -
+	echo                                       ╔══════════════════════════════════════════╗                                      
+	echo                                       ║ Please select one the following options: ║                                      
+	echo                                       ╠══════════════════════════════════════════╣                                      
+	echo                                       ║        1. Open ReadMe                    ║                                      
+	echo                                       ║        2. Update WarpSpeed               ║                                      
+	echo                                       ║        3. Return to Main Menu            ║
+	echo                                       ╚══════════════════════════════════════════╝ 
+	goto :EOF
+	
+	:helpMenu
+	call :drawHelpMenu
+	echo.
+	echo.
+	echo.
+	set /p input="What is your selection? (1-3): "
+	if "!input!" EQU "1" (start notepad "README.md")
+	if "!input!" EQU "2" (call :checkUpdate)
+	if "!input!" EQU "3" (goto :menu)
+	goto :helpMenu
+
+	)
+if "%input%" EQU "4" (
+	call :drawMenu
+	echo.
+	echo What is your selection^? ^(1-4^): %input%
+	set /p input="Are you sure you want to quit? (y/n): "
+	if "!input!" EQU "y" (exit) else (goto :menu)
+	)
+	
+goto :menu
+exit
+
+:nightAuditAccel
+cls
+
+setlocal EnableExtensions DisableDelayedExpansion
+set /a count=1
 
 cls
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
@@ -117,34 +210,6 @@ call :updateWS
 exit
 )
 
-if exist "rmrtver.csv" (
-	echo Room Rate Verification Report detected: Engaging WarpDrive
-	echo.
-	pause
-	set wdRep=rmrtver
-	call :warpDrive
-	pause
-	exit
-)
-if exist "exparvls.csv" (
-	echo Expected Arrivals Report detected: Engaging WarpDrive
-	echo.
-	pause
-	set wdRep=exparvls
-	call :warpDrive
-	pause
-	exit
-)
-if exist "actarvls.csv" (
-	echo Actual Arrivals Report detected: Engaging WarpDrive
-	echo.
-	pause
-	set wdRep=actarvls
-	call :warpDrive
-	pause
-	exit
-)
-
 call :getAuditDate
 echo Audit Pack will be generated for %nameMonth% %auditDay%, %year%.
 echo.
@@ -152,10 +217,10 @@ set /p input=" Would you like to begin? (y/n): "
 
 if "%input%" == "n" (
   echo.
-  echo Closing WarpSpeed . . .
+  echo Closing Night Audit Accelerator . . .
   echo.
   pause
-  exit
+  goto :menu
 )
 rem Manual user input, can input date, or run help or update functions
 if "%input%" == "debug" (
@@ -165,7 +230,7 @@ if "%input%" == "debug" (
 rem Help function
 if "%input%" == "help" (
 start notepad "README.md" 
-goto :restart
+goto :nightAuditAccel
 )
 rem Update function
 if "%input%" == "update" (
@@ -175,10 +240,10 @@ exit
 
 if "%input%" NEQ "y" (
   echo.
-  echo Input not recognized, restarting WarpSpeed.
+  echo Input not recognized, restarting Night Audit Accelerator.
   echo.
   pause
-  goto :restart
+  goto :nightAuditAccel
 )
 
 rmdir /s /q OutputFolder 2>nul
@@ -221,23 +286,50 @@ call :cleanUp
 
 rem Subroutine for the creation of Audit Pack
 echo Creating Audit Pack . . .
-
 call :auditPack
 
+rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
+echo Generating WarpSpeed Report . . .
+call :makeReport
+
 rem Copying of created Audit Pack to destination folder on shared drive
-echo Copying Audit Pack to Cloud Drive . . .
+echo Copying Audit Pack to Cloud Drive . . . ^(If WarpSpeed hangs here, Audit Pack will need to be copied manually^)
 if "%debug%" == "1" (
 	robocopy "%cd%\OutputFolder\AuditPack\ " "%cd%\debug\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 ) else (
 	robocopy "%cd%\OutputFolder\AuditPack\ " "E:\Network Shares\Westin File Server\Accounting Public\Westin - Night Audit\%year%\%nameMonth%\%month%-%auditDay%-%year% " /NFL /NDL /NJH /NJS /nc /ns /np >nul
 )
 
-rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
-echo Generating WarpSpeed Report . . .
-call :makeReport
+rem End of Night Audit Accelator process readouts
+echo Complete.
+
+set "endTime=%time: =0%"
+rem Get elapsed time:
+set "end=!endTime:%time:~8,1%=%%100)*100+1!"  &  set "start=!startTime:%time:~8,1%=%%100)*100+1!"
+set /A "elap=((((10!end:%time:~2,1%=%%100)*60+1!%%100)-((((10!start:%time:~2,1%=%%100)*60+1!%%100), elap-=(elap>>31)*24*60*60*100"
+rem Convert elapsed time to HH:MM:SS:CC format:
+set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=elap/60+100"
+
+echo.
+echo ------------------------------------------- 
+echo.
+echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
+echo.
+echo Audit Pack Back-Up Location: %auditPackLoc%
+echo.
+echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
+echo.
+echo ------------------------------------------- 
+echo.
+echo Have a great rest of your shift^^!
+echo.
+
+start notepad "OutputFolder\WS_Report.txt" 
+start excel "OutputFolder\bbsData.csv" 
+start excel "OutputFolder\OpsData.csv" 
 
 pause
-exit
+goto :menu
 
 :renamePDF
 set "filePDF=%~1"
@@ -604,32 +696,6 @@ echo TotalRev,!totRev!
 echo Arrivals,!arrivals!
 echo Departures,!departures!
 ) > OutputFolder\opsData.csv
-echo Complete.
-
-set "endTime=%time: =0%"
-rem Get elapsed time:
-set "end=!endTime:%time:~8,1%=%%100)*100+1!"  &  set "start=!startTime:%time:~8,1%=%%100)*100+1!"
-set /A "elap=((((10!end:%time:~2,1%=%%100)*60+1!%%100)-((((10!start:%time:~2,1%=%%100)*60+1!%%100), elap-=(elap>>31)*24*60*60*100"
-rem Convert elapsed time to HH:MM:SS:CC format:
-set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=elap/60+100"
-
-echo.
-echo ------------------------------------------- 
-echo.
-echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
-echo.
-echo Audit Pack Back-Up Location: %auditPackLoc%
-echo.
-echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
-echo.
-echo ------------------------------------------- 
-echo.
-echo Have a great rest of your shift^^!
-echo.
-
-start notepad "OutputFolder\WS_Report.txt" 
-start excel "OutputFolder\bbsData.csv" 
-start excel "OutputFolder\OpsData.csv" 
 
 goto :EOF
 
@@ -741,31 +807,112 @@ if %month% LEQ 9 (
 set dat=%month%-%auditDay%-%year%
 goto :EOF
 
+:getLengthOfStay
+rem Converts departure date to a format where a forumla can be performed that detects 
+rem the length of stay for that reservation
+set month=%date:~4,2%
+set day=%date:~7,2%
+set year=%date:~10,4%
+
+set "departDate=%1"
+if "%departDate:~1,1%" EQU "-" (set "departDay=%departDate:~0,1%") else (set "departDay=%departDate:~0,2%")
+if "%departDate:~1,1%" EQU "-" (set "departMonth=%departDate:~2,3%") else (set "departMonth=%departDate:~3,-3%")
+set "departYear=20%departDate:~-2%"
+
+if "%departMonth%" EQU "Jan" (set departMonth=01)
+if "%departMonth%" EQU "Feb" (set departMonth=02)
+if "%departMonth%" EQU "Mar" (set departMonth=03)
+if "%departMonth%" EQU "Apr" (set departMonth=04)
+if "%departMonth%" EQU "May" (set departMonth=05)
+if "%departMonth%" EQU "Jun" (set departMonth=06)
+if "%departMonth%" EQU "Jul" (set departMonth=07)
+if "%departMonth%" EQU "Aug" (set departMonth=08)
+if "%departMonth%" EQU "Sep" (set departMonth=09)
+if "%departMonth%" EQU "Oct" (set departMonth=10)
+if "%departMonth%" EQU "Nov" (set departMonth=11)
+if "%departMonth%" EQU "Dec" (set departMonth=12)
+
+if "%month%" EQU "01" (set /a accumDays=0)
+if "%month%" EQU "02" (set /a accumDays=31)
+if "%month%" EQU "03" (set /a accumDays=59)
+if "%month%" EQU "04" (set /a accumDays=90)
+if "%month%" EQU "05" (set /a accumDays=120)
+if "%month%" EQU "06" (set /a accumDays=151)
+if "%month%" EQU "07" (set /a accumDays=181)
+if "%month%" EQU "08" (set /a accumDays=212)
+if "%month%" EQU "09" (set /a accumDays=243)
+if "%month%" EQU "10" (set /a accumDays=273)
+if "%month%" EQU "11" (set /a accumDays=304)
+if "%month%" EQU "12" (set /a accumDays=334)
+
+if "%departMonth%" EQU "01" (set /a departAccumDays=0)
+if "%departMonth%" EQU "02" (set /a departAccumDays=31)
+if "%departMonth%" EQU "03" (set /a departAccumDays=59)
+if "%departMonth%" EQU "04" (set /a departAccumDays=90)
+if "%departMonth%" EQU "05" (set /a departAccumDays=120)
+if "%departMonth%" EQU "06" (set /a departAccumDays=151)
+if "%departMonth%" EQU "07" (set /a departAccumDays=181)
+if "%departMonth%" EQU "08" (set /a departAccumDays=212)
+if "%departMonth%" EQU "09" (set /a departAccumDays=243)
+if "%departMonth%" EQU "10" (set /a departAccumDays=273)
+if "%departMonth%" EQU "11" (set /a departAccumDays=304)
+if "%departMonth%" EQU "12" (set /a departAccumDays=334)
+
+set /a departNumDays = ("%departYear%" * 365) + %departAccumDays% + %departDay% 
+set /a departNumberOfLeaps = ("%departYear%" / 4) - ("%departYear%" / 100) + ("%departYear%" / 400)
+set /a departNumDays = !departNumDays! + !departNumberOfLeaps!
+
+set /a numDays = ("%year%" * 365) + %accumDays% + %day% 
+set /a numberOfLeaps = ("%year%" / 4) - ("%year%" / 100) + ("%year%" / 400)
+set /a numDays = !numDays! + !numberOfLeaps!
+
+set /a lengthOfStay = !departNumDays! - !numDays!
+goto :EOF
+
 :warpDrive
 rem WarpDrive Package Detector
-set wdVer=1.4
+set wdVer=1.5
+set /a input=0
+set /a wdRep=0
+if exist "rmrtver.csv" (set wdRep=rmrtver)
+if exist "exparvls.csv" (set wdRep=exparvls)
+if exist "actarvls.csv" (set wdRep=actarvls)
 cls
-echo WarpDrive: Room Package Detector by John Dudek
-echo ##############################################
-echo # __      __             ___      _          #
-echo # \ \    / /_ _ _ _ _ __^|   \ _ _^(_^)_ _____  #
-echo #  \ \/\/ / _^` ^| ^'_^| ^'_ \ ^|^) ^| ^'_^| \ V / -_^) #
-echo #   \_/\_/\__,_^|_^| ^| .__/___/^|_^| ^|_^|\_/\___^| #
-echo #                  ^|_^|                 v%wdVer%  #
-echo #                                            #
-echo ##############################################
+echo WarpSpeed: Room Package Detector by John Dudek v%ver%
+echo Type "help" for instructions
 echo.
 echo Which packages would you like to find?:
 echo  1. All Packages
 echo  2. Valet Packages
+echo  3. Quit
 echo.
-set /p input=" Please make a selection (1|2): "
-if %input% EQU 1 (
-	set wdKey="PKG_LIST"
-	) else (
-	if %input% EQU 2 (
-		set wdKey="Valet"
-		) else (
+set /p input=" Please make a selection (1-3): "
+
+if "%wdRep%" == "0" (
+echo.
+echo ERROR: No usable reports found in WarpSpeed folder.
+echo.
+echo WarpSpeed: Room Package Detector will now quit.
+echo.
+pause
+goto :menu
+)
+
+if "%input%" == "help" (
+start notepad "README.md" 
+goto :WarpDrive
+)
+
+if %input% EQU 1 (set wdKey="PKG_LIST")
+if %input% EQU 2 (set wdKey="Valet")
+if %input% EQU 3 (
+	echo.
+	echo Closing Room Package Detector . . .
+	echo.
+	pause
+	goto :menu
+)
+if %input% EQU 0 (
 		echo.
 		echo Invalid Input.
 		echo.
@@ -787,30 +934,67 @@ echo Scanning for Packages . . .
 md "OutputFolder" 2>nul
 if "%wdRep%" EQU "exparvls" (
 for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
+	set arrType=""
 	set noRoom=0
 	set awrdRoom=0
 	if "%%a" == "@" set awrdName="%%d,%%e"
 	if 1%%f EQU +1%%f set awrdRoom=1
 	if "%%a" == "KG" set noRoom=1
 	if "%%a" == "QN" set noRoom=1
+	if "%%a" == "AQNR" set noRoom=1
+	if "%%a" == "AQNB" set noRoom=1
 	if "%%a" == "EK" set noRoom=1
 	if "%%a" == "EQ" set noRoom=1
 	if "%%a" == "KS" set noRoom=1
 	if "%%a" == "VP" set noRoom=1
 	if "%%a" == "PR" set noRoom=1
 	if "%%a" == "&" (
-		if 1%%a EQU +1%%a (if "%%f" == "G" (echo %%b %%g,%%h %%k) else (echo %%b %%g,%%h %%j))
+		if 1%%b EQU +1%%b (if "%%f" == "G" (set arrType=BlockGroup) else (set arrType=BlockTrans))
 		) else (			
 			if "%%f" == "G" (
-				if "!noRoom!" == "1" (echo No Room Assigned %%e,%%f %%i) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (echo %%a %%f,%%g %%j)))
+				if "!noRoom!" == "1" (set arrType=NoRmGroup) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (set arrType=Group)))
 				) else (
-					if "!noRoom!" == "1" (echo No Room Assigned %%e,%%f %%h) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (
-						if "!awrdRoom!" == "1" (echo %%a !awrdName! %%c) else (echo %%a %%f,%%g %%i)
+					if "!noRoom!" == "1" (if "%%b" == "@" (set arrType=NoRmTrans) else (set arrType=NoRmNoProfTrans)) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (
+						if "!awrdRoom!" == "1" (set arrType=AwrdTrans) else (set arrType=Trans)
 					)))
 				)
 		)
+		if "!arrType!" == "BlockGroup" (
+		call :getLengthOfStay %%j
+		echo %%b %%g,%%h %%k ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "BlockTrans" (
+		call :getLengthOfStay %%i
+		echo %%b %%g,%%h %%j ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "NoRmGroup" (
+		call :getLengthOfStay %%h
+		echo No Room Assigned %%e,%%f %%i ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "Group" (
+		call :getLengthOfStay %%i
+		echo %%a %%f,%%g %%j ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "NoRmTrans" (
+		call :getLengthOfStay %%g
+		echo No Room Assigned %%e,%%f %%h ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "NoRmNoProfTrans" (
+		call :getLengthOfStay %%f
+		echo No Room Assigned %%d,%%e %%g ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "AwrdTrans" (
+		call :getLengthOfStay %%b
+		echo %%a !awrdName! %%c ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "Trans" (
+		call :getLengthOfStay %%h
+		echo %%a %%f,%%g %%i ^| !lengthOfStay! Night^(s^)
+		)
 	) >> temp.txt
 )
+
+
 if "%wdRep%" EQU "actarvls" (
 for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 	if 1%%a EQU +1%%a set "roomInfo=%%a %%e,%%f"
@@ -866,6 +1050,5 @@ echo.
 echo Have a great rest of your shift^^!
 echo.
 setlocal DisableDelayedExpansion
-goto :EOF
-
-exit
+pause
+goto :menu
