@@ -60,21 +60,21 @@ goto :EOF
 cls
 echo.
 echo.
-echo.                                                                                                                        
-echo.                                                                                                                        
 echo.
-echo.                                                                                                                        
-echo                  888       888                             .d8888b.                                 888              
-echo                   888   o   888                           d88P  Y88b                                 888               
-echo                   888  d8b  888                           Y88b.                                      888               
-echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888               
-echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888              
-echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888              
-echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888             
-echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888            
-echo                                                  888                 888                                           
-echo                                                  888                 888                                 
-echo                                                  888                 888                                    
+echo.
+echo.
+echo.
+echo                  888       888                             .d8888b.                                 888
+echo                   888   o   888                           d88P  Y88b                                 888
+echo                   888  d8b  888                           Y88b.                                      888
+echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888
+echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888
+echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888
+echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888
+echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888
+echo                                                  888                 888
+echo                                                  888                 888
+echo                                                  888                 888
 echo.
 echo                                     P M S   S u p p l e m e n t a t i o n   S u i t e
 echo.
@@ -82,8 +82,8 @@ echo                                                          v %ver%
 echo.
 echo                                            Copyright (C) 2020-2021 John Dudek
 echo.
-echo.                                                                                                                        
-echo.                                                                                                                        
+echo.
+echo.
 echo.
 echo.
 pause
@@ -93,28 +93,28 @@ cls
 echo.
 echo.
 echo.
-echo.                                                                                                                        
-echo.                                                                                                                        
-echo.                                                                                                                        
-echo                  888       888                             .d8888b.                                 888              
-echo                   888   o   888                           d88P  Y88b                                 888               
-echo                   888  d8b  888                           Y88b.                                      888               
-echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888               
-echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888              
-echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888              
-echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888             
-echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888            
-echo                                                  888                 888                                           
-echo                                                  888                 888                                 
-echo                                                  888                 888                                               
+echo.
+echo.
+echo.
+echo                  888       888                             .d8888b.                                 888
+echo                   888   o   888                           d88P  Y88b                                 888
+echo                   888  d8b  888                           Y88b.                                      888
+echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888
+echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888
+echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888
+echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888
+echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888
+echo                                                  888                 888
+echo                                                  888                 888
+echo                                                  888                 888
 echo.                                                      - Main Menu -
-echo                                       ╔══════════════════════════════════════════╗                                      
-echo                                       ║ Please select one the following options: ║                                      
-echo                                       ╠══════════════════════════════════════════╣                                      
-echo                                       ║        1. Night Audit Accelerator        ║                                      
-echo                                       ║        2. Room Package Detector          ║                                      
-echo                                       ║        3. Help                           ║                                      
-echo                                       ║        4. Quit                           ║                                      
+echo                                       ╔══════════════════════════════════════════╗
+echo                                       ║ Please select one the following options: ║
+echo                                       ╠══════════════════════════════════════════╣
+echo                                       ║        1. Night Audit Accelerator        ║
+echo                                       ║        2. Room Package Detector          ║
+echo                                       ║        3. Help                           ║
+echo                                       ║        4. Quit                           ║
 echo                                       ╚══════════════════════════════════════════╝ 
 goto :EOF
 
@@ -133,26 +133,26 @@ if "%input%" EQU "3" (
 	echo.
 	echo.
 	echo.
-	echo.                                                                                                                        
-	echo.                                                                                                                        
-	echo.                                                                                                                        
-	echo                  888       888                             .d8888b.                                 888              
-	echo                   888   o   888                           d88P  Y88b                                 888               
-	echo                   888  d8b  888                           Y88b.                                      888               
-	echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888               
-	echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888              
-	echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888              
-	echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888             
-	echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888            
-	echo                                                  888                 888                                           
-	echo                                                  888                 888                                 
-	echo                                                  888                 888                                               
+	echo.
+	echo.
+	echo.
+	echo                  888       888                             .d8888b.                                 888
+	echo                   888   o   888                           d88P  Y88b                                 888
+	echo                   888  d8b  888                           Y88b.                                      888
+	echo                   888 d888b 888  8888b.  888d888 88888b.   "Y888b.   88888b.   .d88b.   .d88b.   .d88888
+	echo                   888d88888b888     "88b 888P"   888 "88b     "Y88b. 888 "88b d8P  Y8b d8P  Y8b d88" 888
+	echo                   88888P Y88888 .d888888 888     888  888       "888 888  888 88888888 88888888 888  888
+	echo                   8888P   Y8888 888  888 888     888 d88P Y88b  d88P 888 d88P Y8b.     Y8b.     Y88b 888
+	echo                   888P     Y888 "Y888888 888     88888P"   "Y8888P"  88888P"   "Y8888   "Y8888   "Y88888
+	echo                                                  888                 888
+	echo                                                  888                 888
+	echo                                                  888                 888
 	echo.                                                      - Help Menu -
-	echo                                       ╔══════════════════════════════════════════╗                                      
-	echo                                       ║ Please select one the following options: ║                                      
-	echo                                       ╠══════════════════════════════════════════╣                                      
-	echo                                       ║        1. Open ReadMe                    ║                                      
-	echo                                       ║        2. Update WarpSpeed               ║                                      
+	echo                                       ╔══════════════════════════════════════════╗
+	echo                                       ║ Please select one the following options: ║
+	echo                                       ╠══════════════════════════════════════════╣
+	echo                                       ║        1. Open ReadMe                    ║
+	echo                                       ║        2. Update WarpSpeed               ║
 	echo                                       ║        3. Return to Main Menu            ║
 	echo                                       ╚══════════════════════════════════════════╝ 
 	goto :EOF
