@@ -955,7 +955,7 @@ for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 				if "!noRoom!" == "1" (set arrType=NoRmGroup) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (set arrType=Group)))
 				) else (
 					if "!noRoom!" == "1" (if "%%b" == "@" (set arrType=NoRmTrans) else (set arrType=NoRmNoProfTrans)) else (if 1%%a EQU +1%%a (if 1%%b NEQ +1%%b (
-						if "!awrdRoom!" == "1" (set arrType=AwrdTrans) else (set arrType=Trans)
+						if "!awrdRoom!" == "1" (set arrType=AwrdTrans) else (if "%%c" == "@" (set arrType=Trans) else (set arrType=NoProfTrans))
 					)))
 				)
 		)
@@ -990,6 +990,10 @@ for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 		if "!arrType!" == "Trans" (
 		call :getLengthOfStay %%h
 		echo %%a %%f,%%g %%i ^| !lengthOfStay! Night^(s^)
+		)
+		if "!arrType!" == "NoProfTrans" (
+		call :getLengthOfStay %%g
+		echo %%a %%e,%%f %%h ^| !lengthOfStay! Night^(s^)
 		)
 	) >> temp.txt
 )
