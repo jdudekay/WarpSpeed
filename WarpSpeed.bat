@@ -888,16 +888,6 @@ echo  3. Quit
 echo.
 set /p input=" Please make a selection (1-3): "
 
-if "%wdRep%" == "0" (
-echo.
-echo ERROR: No usable reports found in WarpSpeed folder.
-echo.
-echo Room Package Detector will now quit.
-echo.
-pause
-goto :menu
-)
-
 if "%input%" == "help" (
 start notepad "README.md"
 goto :WarpDrive
@@ -920,6 +910,15 @@ if %input% EQU 0 (
 		goto :warpDrive
 		)
 	)
+)
+if "%wdRep%" == "0" (
+echo.
+echo ERROR: No usable reports found in WarpSpeed folder.
+echo.
+echo Room Package Detector will now quit.
+echo.
+pause
+goto :menu
 )
 setlocal EnableDelayedExpansion
 set "startTime=%time: =0%"
