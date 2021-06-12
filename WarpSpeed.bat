@@ -262,6 +262,7 @@ set "startTime=%time: =0%"
 
 rem Copying of all .pdfs from p2 folder to WarpSpeed folder
 echo.
+setlocal enableextensions enabledelayedexpansion
 echo Copying reports from eci folder . . .
 if "%debug%" == "1" (
 	robocopy "%cd%\debug\ " "%cd%\OutputFolder " /NFL /NDL /NJH /NJS /nc /ns /np >nul
@@ -270,7 +271,7 @@ if "%debug%" == "1" (
 	set day=%date:~7,2%
 	set year=%date:~10,4%
 	set currDat=!year!!month!!day!
-	copy Z:\eci\!currDat!* "%cd%\OutputFolder " >nul
+	copy Z:\eci\!currDat!* %cd%\OutputFolder >nul
 )
 
 
