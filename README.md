@@ -11,7 +11,7 @@ Using **WarpSpeed** is designed to be as simple as possible, with a full explana
 - Copying of .pdfs into OutputFolder (Folder will be created if it does not exist)
 - Analysis of .pdfs
 - Renaming and copying of .pdfs into AuditPack and AllReports folders
-- Generation of WS_Report.txt, bbsData.csv, and opsData.csv
+- Generation of NAA_Report.txt, bbsData.csv, and opsData.csv
 - Copying of AuditPack folder into appropriate destination on Cloud Drive
 
 The Audit Pack Back-Up and WS_Report's locations will be displayed on the Operation Complete screen, and the **WarpSpeed** report as well as the generated spreadsheets which contains additional information for the completion of Night Audit will be displayed before the program closes.
