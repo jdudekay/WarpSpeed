@@ -1,6 +1,6 @@
 # Welcome to WarpSpeed!
- 
-**WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all ~~98~~ 99 Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report. 
+
+**WarpSpeed** was created with the intention of streamlining the Night Audit process by means of automatically identifying and sorting all ~~98~~ 99 Night Audit reports and extracting key information to be compiled in a convenient **WarpSpeed** report.
 
 The scope of **WarpSpeed** has widened over time and is now also designed to analyze a list of guests, compare them against various lists of packages, and produce a report of said guests via a cheekily named **WarpDrive** subroutine.
 
@@ -20,18 +20,18 @@ The Audit Pack Back-Up and WS_Report's locations will be displayed on the Operat
 
 ## Room Package Detector (WarpDrive)
 By generating the Expected Arrivals report in .csv format and placing it in the /WarpSpeed/ directory, you can use this function to compare the report against user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
-The user will be prompted to select either All Packages or just Valet Packages.
+The user will be prompted to select either All Packages or just Valet Packages, after which they will be allowed to select a .csv file to analyze. Currently the Room Package Detector is only configured to analyze the Expected Arrivals report.
 
 All Package Description files used by **WarpSpeed** will be .txt filetype and have the following format:
 
-*PKG_LIST*  
-*NAME AND DESCRIPTION OF PACKAGE*  
-*99RATE*  
-*99RATE*  
-*etc...*  
+*PKG_LIST*
+*NAME AND DESCRIPTION OF PACKAGE*
+*99RATE*
+*99RATE*
+*etc...*
 
 ## Help
-This menu is pretty self-explanatory, you can either open this ReadMe, or you can run **WarpSpeed**'s Update function. 
+This menu is pretty self-explanatory, you can either open this ReadMe, or you can run **WarpSpeed**'s Update function.
 When updating, **WarpSpeed** will first check to see what is the most updated version and display that information along-side the current version number so the user can choose to update or not.
 
 ### Error-Checking
