@@ -1,3 +1,4 @@
+<# :Warpspeed.bat
 @echo off
 rem    WarpSpeed: PMS Supplementation Suite - A tool made with the intention
 rem    of streamlining a multitude of different daily necessary processes
@@ -17,7 +18,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=3.0.0
+set ver=3.0.1
 call :warpSpeed
 :updateWS
 cls
@@ -238,13 +239,7 @@ call :updateWS
 exit
 )
 
-if "%input%" NEQ "y" (
-  echo.
-  echo Invalid Input.
-  echo.
-  pause
-  goto :nightAuditAccel
-)
+if "%input%" NEQ "y" (goto :nightAuditAccel)
 
 rmdir /s /q OutputFolder 2>nul
 md "OutputFolder" 2>nul
@@ -289,8 +284,8 @@ rem Subroutine for the creation of Audit Pack
 echo Creating Audit Pack . . .
 call :auditPack
 
-rem WarpSpeed report backed up to WS_Report.txt and displayed in console before program quits
-echo Generating WarpSpeed Report . . .
+rem Night Audit Accelerator Report backed up to NAA_Report.txt and displayed in console before program quits
+echo Generating Night Audit Accelerator Report . . .
 call :makeReport
 
 rem Copying of created Audit Pack to destination folder on shared drive
@@ -318,14 +313,14 @@ echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
 echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
-echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
+echo Night Audit Accelerator Report Location: %cd%\OutputFolder\NAA_Report.txt
 echo.
 echo -------------------------------------------
 echo.
 echo Have a great rest of your shift^^!
 echo.
 
-start notepad "OutputFolder\WS_Report.txt"
+start notepad "OutputFolder\NAA_Report.txt"
 start excel "OutputFolder\bbsData.csv"
 start excel "OutputFolder\OpsData.csv"
 
@@ -652,7 +647,7 @@ move "OutputFolder\*.pdf" "OutputFolder\AllReports\" >nul
 (
 echo WarpSpeed: Night Audit Accelerator by John Dudek v%ver%
 echo.
-echo WarpSpeed Report:
+echo Night Audit Accelerator Report:
 echo -------------------------------------------
 echo Night Audit Date: %nameMonth% %auditDay%, %year%
 echo.
@@ -660,7 +655,7 @@ echo Operation Completed on %date% at %time%
 echo.
 echo Audit Pack Back-Up Location: %auditPackLoc%
 echo.
-echo WarpSpeed Report Location: %cd%\OutputFolder\WS_Report.txt
+echo Night Audit Accelerator Report Location: %cd%\OutputFolder\NAA_Report.txt
 echo.
 echo Bank Balance Sheet Data: %cd%\OutputFolder\bbsData.csv
 echo.
@@ -677,7 +672,7 @@ echo Restaurant Revenue: !t54Tot!
 echo In Room Dining: !irdTot!
 echo.
 echo.
-) > OutputFolder\WS_Report.txt
+) > OutputFolder\NAA_Report.txt
 (
 echo AuditDate,%dat%
 echo ,AX,VI,MC,DI
@@ -875,9 +870,7 @@ rem WarpDrive Package Detector
 set wdVer=1.5
 set /a input=0
 set /a wdRep=0
-if exist "rmrtver.csv" (set wdRep=rmrtver)
-if exist "exparvls.csv" (set wdRep=exparvls)
-if exist "actarvls.csv" (set wdRep=actarvls)
+set /a wdKey=0
 cls
 echo WarpSpeed: Room Package Detector by John Dudek v%ver%
 echo Type "help" for instructions
@@ -894,39 +887,38 @@ start notepad "README.md"
 goto :WarpDrive
 )
 
-if %input% EQU 1 (set wdKey="PKG_LIST")
-if %input% EQU 2 (set wdKey="Valet")
-if %input% EQU 3 (
+if "%input%" == "1" (set wdKey="PKG_LIST")
+if "%input%" == "2" (set wdKey="Valet")
+if "%input%" == "3" (
 	echo.
 	echo Closing Room Package Detector . . .
 	echo.
 	pause
 	goto :menu
 )
-if %input% EQU 0 (
-		echo.
-		echo Invalid Input.
-		echo.
-		pause
-		goto :warpDrive
-		)
-	)
-) else (
-		echo.
-		echo Invalid Input.
-		echo.
-		pause
-		goto :warpDrive
+if %wdKey% EQU 0 (goto :warpDrive)
+
+echo Selecting Report . . .
+for /f "delims=" %%I in ('powershell -noprofile "iex (${%~f0} | out-string)"') do (
+	set fullWdRep=%%~I
+	set wdRep=%%~nxI
 )
+
+if "%wdRep%" == "0" (goto :WarpDrive)
+
+for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%") do (
+	if "%%b" NEQ "Expected Arrival" (set /a wdRep=0)
+	goto :break
+	)
+:break
 if "%wdRep%" == "0" (
 echo.
-echo ERROR: No usable reports found in WarpSpeed folder.
-echo.
-echo Room Package Detector will now quit.
+echo ERROR: Invalid Report Selected.
 echo.
 pause
-goto :menu
+goto :WarpDrive
 )
+
 setlocal EnableDelayedExpansion
 set "startTime=%time: =0%"
 
@@ -934,12 +926,10 @@ rem Processing of .cvs Expected Arrivals Report. WarpDrive creates a more easibl
 rem Rat's nest of nested if statements currently will detect and protect against no room being assigned, the guest being part of a group block,
 rem    the guest having an extended block, and the guest having either an obscene amount of service codes or being a certificate award, sample set
 rem    is too small to determine what exactly is being fixed on the last one
-echo.
 echo Scanning for Packages . . .
 
 md "OutputFolder" 2>nul
-if "%wdRep%" EQU "exparvls" (
-for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
+for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%") do (
 	set arrType=""
 	set noRoom=0
 	set awrdRoom=0
@@ -1002,38 +992,39 @@ for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
 		echo %%a %%e,%%f %%h ^| !lengthOfStay! Night^(s^)
 		)
 	) >> temp.txt
-)
 
+REM if "%wdRep%" EQU "actarvls" (
+REM for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
+	REM if 1%%a EQU +1%%a set "roomInfo=%%a %%e,%%f"
+	REM if "%%a" EQU "Rate Schedule/Rate:" (if "%%b" NEQ "/ $0.00" (
+		REM set rateCode=%%b
+		REM echo !roomInfo! !rateCode:~0,7!
+		REM ))
+	REM ) >> temp.txt
+REM )
 
-if "%wdRep%" EQU "actarvls" (
-for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
-	if 1%%a EQU +1%%a set "roomInfo=%%a %%e,%%f"
-	if "%%a" EQU "Rate Schedule/Rate:" (if "%%b" NEQ "/ $0.00" (
-		set rateCode=%%b
-		echo !roomInfo! !rateCode:~0,7!
-		))
-	) >> temp.txt
-)
 (
-echo WarpDrive: Room Package Detector by John Dudek v%wdVer%
+echo WarpSpeed: Room Package Detector by John Dudek v%ver%
 echo.
-echo WarpDrive Report:
+echo Room Package Detector Report:
 echo -------------------------------------------
 echo Operation Completed on %date% at %time%
 echo.
-echo WarpDrive Report Location: %cd%\WD_Report.txt
+echo Report Analyzed: %fullWdRep%
+echo.
+echo Room Package Detector Report Location: %cd%\OutputFolder\RPD_Report.txt
 echo.
 echo +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-) > OutputFolder\WD_Report.txt
+) > OutputFolder\RPD_Report.txt
 FINDSTR /M /C:"%wdKey%" "tools\packages\*.txt" > temp2.txt
 for /F "delims=" %%A in (temp2.txt) do (
 	set packDesc=0
 	for /F "skip=1 delims=" %%B IN (%%A) DO if !packDesc! EQU 0 set "packDesc=%%B"
 	FINDSTR /i /L /g:"%%A" "temp.txt" > temp3.txt
-	if !errorlevel! EQU 0 echo.>>OutputFolder\WD_Report.txt
-	if !errorlevel! EQU 0 echo !packDesc!>>OutputFolder\WD_Report.txt
-	if !errorlevel! EQU 0 echo ===============================>>OutputFolder\WD_Report.txt
-	for /F "delims=" %%C in (temp3.txt) do echo %%C>>OutputFolder\WD_Report.txt
+	if !errorlevel! EQU 0 echo.>>OutputFolder\RPD_Report.txt
+	if !errorlevel! EQU 0 echo !packDesc!>>OutputFolder\RPD_Report.txt
+	if !errorlevel! EQU 0 echo ===============================>>OutputFolder\RPD_Report.txt
+	for /F "delims=" %%C in (temp3.txt) do echo %%C>>OutputFolder\RPD_Report.txt
 	)
 )
 set "endTime=%time: =0%"
@@ -1046,14 +1037,16 @@ set /A "cc=elap%%100+100,elap/=100,ss=elap%%60+100,elap/=60,mm=elap%%60+100,hh=e
 del temp.txt
 del temp2.txt
 del temp3.txt
-start notepad "OutputFolder\WD_Report.txt"
+start notepad "OutputFolder\RPD_Report.txt"
 echo Complete.
 echo.
 echo -------------------------------------------
 echo.
 echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
-echo WarpDrive Report Location: %cd%\OutputFolder\WD_Report.txt
+echo Report Analyzed: %fullWdRep%
+echo.
+echo Room Package Detector Report Location: %cd%\OutputFolder\RPD_Report.txt
 echo.
 echo -------------------------------------------
 echo.
@@ -1062,3 +1055,15 @@ echo.
 setlocal DisableDelayedExpansion
 pause
 goto :menu
+
+goto :EOF
+#>
+
+Add-Type -AssemblyName System.Windows.Forms
+$f = new-object Windows.Forms.OpenFileDialog
+$f.InitialDirectory = pwd
+$f.Filter = "Comma Separated Values (.csv)|*.csv|All Files (*.*)|*.*"
+$f.ShowHelp = $false
+$f.Multiselect = $false
+[void]$f.ShowDialog()
+if ($f.Multiselect) { $f.FileNames } else { $f.FileName }
