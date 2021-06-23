@@ -19,7 +19,7 @@ The Audit Pack Back-Up and WS_Report's locations will be displayed on the Operat
 (Advanced users can type "debug"  at the prompt to use a user-defined group of Night Audit Reports)
 
 ## Room Package Detector (WarpDrive)
-By generating the Expected Arrivals report in .csv format and placing it in the /WarpSpeed/ directory, you can use this function to compare the report against user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
+By generating either the Expected Arrivals or Actual Arrivals report in .csv format and placing it in the /WarpSpeed/ directory, you can use this function to compare the report against user-created Package Description files contained within the /WarpSpeed/tools/packages/ directory and generate a report indicating which, if any, of these guests had purchased a package that would require additional action from the front desk.
 The user will be prompted to select either All Packages or just Valet Packages, after which they will be allowed to select a .csv file to analyze. Currently the Room Package Detector is only configured to analyze the Expected Arrivals report.
 
 All Package Description files used by **WarpSpeed** will be .txt filetype and have the following format:
