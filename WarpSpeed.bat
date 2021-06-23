@@ -18,7 +18,7 @@ rem    GNU General Public License for more details.
 rem
 rem    You should have received a copy of the GNU General Public License
 rem    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-set ver=3.0.1
+set ver=3.0.2
 call :warpSpeed
 :updateWS
 cls
@@ -867,9 +867,11 @@ goto :EOF
 
 :warpDrive
 rem WarpDrive Package Detector
-set wdVer=1.5
+set wdVer=1.6
 set /a input=0
 set /a wdRep=0
+set /a wdRepValid=0
+set /a wdRepType=0
 set /a wdKey=0
 cls
 echo WarpSpeed: Room Package Detector by John Dudek v%ver%
@@ -900,18 +902,24 @@ if %wdKey% EQU 0 (goto :warpDrive)
 
 echo Selecting Report . . .
 for /f "delims=" %%I in ('powershell -noprofile "iex (${%~f0} | out-string)"') do (
-	set fullWdRep=%%~I
-	set wdRep=%%~nxI
+	set wdRep=%%~I
 )
 
 if "%wdRep%" == "0" (goto :WarpDrive)
 
 for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%") do (
-	if "%%b" NEQ "Expected Arrival" (set /a wdRep=0)
+	if "%%b" EQU "Expected Arrival" (
+		set /a wdRepType=1
+		set /a wdRepValid=1
+		)
+	if "%%b" EQU "Actual Arrivals" (
+		set /a wdRepType=2
+		set /a wdRepValid=1
+		)
 	goto :break
 	)
 :break
-if "%wdRep%" == "0" (
+if "%wdRepValid%" == "0" (
 echo.
 echo ERROR: Invalid Report Selected.
 echo.
@@ -929,6 +937,8 @@ rem    is too small to determine what exactly is being fixed on the last one
 echo Scanning for Packages . . .
 
 md "OutputFolder" 2>nul
+
+if %wdRepType% EQU 1 (
 for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%") do (
 	set arrType=""
 	set noRoom=0
@@ -992,16 +1002,20 @@ for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%") do (
 		echo %%a %%e,%%f %%h ^| !lengthOfStay! Night^(s^)
 		)
 	) >> temp.txt
+)
 
-REM if "%wdRep%" EQU "actarvls" (
-REM for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%.csv") do (
-	REM if 1%%a EQU +1%%a set "roomInfo=%%a %%e,%%f"
-	REM if "%%a" EQU "Rate Schedule/Rate:" (if "%%b" NEQ "/ $0.00" (
-		REM set rateCode=%%b
-		REM echo !roomInfo! !rateCode:~0,7!
-		REM ))
-	REM ) >> temp.txt
-REM )
+if %wdRepType% EQU 2 (
+for /f "usebackq tokens=1-11 delims=," %%a in ("%wdRep%") do (
+	if 1%%a EQU +1%%a (
+		set "roomInfo=%%a %%e,%%f"
+		call :getLengthOfStay %%i
+		)
+	if "%%a" EQU "Rate Schedule/Rate:" (if "%%b" NEQ "/ $0.00" (
+		set rateCode=%%b
+		echo !roomInfo! !rateCode:~0,7!^| !lengthOfStay! Night^(s^)
+		))
+	) >> temp.txt
+)
 
 (
 echo WarpSpeed: Room Package Detector by John Dudek v%ver%
@@ -1010,7 +1024,7 @@ echo Room Package Detector Report:
 echo -------------------------------------------
 echo Operation Completed on %date% at %time%
 echo.
-echo Report Analyzed: %fullWdRep%
+echo Report Analyzed: %wdRep%
 echo.
 echo Room Package Detector Report Location: %cd%\OutputFolder\RPD_Report.txt
 echo.
@@ -1044,7 +1058,7 @@ echo -------------------------------------------
 echo.
 echo Total elapsed time: %mm:~1% minute(s) and %ss:~1%%time:~8,1%%cc:~1% seconds
 echo.
-echo Report Analyzed: %fullWdRep%
+echo Report Analyzed: %wdRep%
 echo.
 echo Room Package Detector Report Location: %cd%\OutputFolder\RPD_Report.txt
 echo.
